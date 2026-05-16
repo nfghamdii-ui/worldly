@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Worldly"/>
+<meta name="theme-color" content="#8b3a9e"/>
+<link rel="manifest" href="/manifest.json"/>
+<link rel="apple-touch-icon" href="/icon-192.png"/>
+<title>Worldly — كلمة يومية</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#141428;--surf:#1e1e3a;--surf2:#28284a;--brd:#35356a;
+  --acc:#8b3a9e;--acc2:#c47abf;--grn:#3ec87a;--red:#e05555;
+  --txt:#ebebf5;--mut:#8888b0;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-height:100vh;overflow-x:hidden;}
+.app{max-width:460px;margin:0 auto;min-height:100vh;}
+
+.header{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;z-index:50;
+  background:var(--bg);border-bottom:1px solid var(--brd);
+  padding:calc(14px + var(--safe-top)) 16px 10px;
+  display:flex;align-items:center;justify-content:space-between;}
+.logo-en{font-family:'Playfair Display',serif;font-style:italic;font-size:22px;color:var(--acc);line-height:1;}
+.logo-sub{font-size:10px;color:var(--mut);letter-spacing:1px;}
+
+.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;z-index:50;
+  background:var(--bg);border-top:1px solid var(--brd);
+  padding:10px 16px calc(10px + var(--safe-bot));display:flex;gap:6px;}
+.tab{flex:1;padding:10px 4px;background:var(--surf);border:1px solid var(--brd);
+  border-radius:10px;color:var(--mut);font-family:'Tajawal',sans-serif;
+  font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;}
+.tab.on{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700;}
+
+.content{padding:calc(70px + var(--safe-top)) 16px calc(80px + var(--safe-bot));}
+
+.page{display:none;}
+.page.on{display:block;animation:up .3s ease;}
+@keyframes up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+.card{background:var(--surf);border:1px solid var(--brd);border-radius:14px;padding:14px;margin-bottom:10px;}
+.lbl{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;text-align:right;}
+
+.hero{background:linear-gradient(145deg,#1e1e3a,#28184a);border:1px solid var(--brd);
+  border-radius:16px;padding:24px 20px;text-align:center;margin-bottom:10px;}
+.badge{display:inline-block;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;margin:0 3px 10px;}
+.word-big{font-family:'Playfair Display',serif;font-size:46px;font-weight:700;line-height:1;margin-bottom:6px;}
+.word-ph{direction:ltr;color:var(--mut);font-size:13px;margin-bottom:12px;}
+.word-ar{font-size:26px;font-weight:800;color:var(--acc);margin-bottom:14px;}
+
+.btns3{display:flex;gap:6px;}
+.abtn{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;
+  border-radius:30px;padding:10px 4px;font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;border:1px solid;}
+
+.gen-bar{display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:20px;margin-bottom:10px;background:var(--surf);border-radius:14px;border:1px solid var(--brd);}
+.dot{width:8px;height:8px;background:var(--acc);border-radius:50%;
+  animation:bounce 1.2s ease-in-out infinite;}
+.dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,80%,100%{transform:scale(.6);opacity:.4;}40%{transform:scale(1);opacity:1;}}
+
+.ex-block{border-right:3px solid var(--acc2);padding-right:10px;margin-bottom:12px;}
+.ex-block:last-child{margin-bottom:0;}
+.ex-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.ex-en{font-size:13px;font-style:italic;direction:ltr;text-align:left;flex:1;margin-bottom:3px;}
+.ex-ar{font-size:12px;color:var(--mut);}
+.spk-sm{background:none;border:1px solid var(--brd);border-radius:20px;padding:3px 8px;
+  color:var(--mut);font-size:11px;cursor:pointer;flex-shrink:0;font-family:'Tajawal',sans-serif;}
+
+/* Grammar */
+.gram-head{width:100%;padding:14px 16px;background:none;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;font-family:'Tajawal',sans-serif;}
+.gram-body{padding:0 16px 16px;border-top:1px solid var(--brd);}
+.gram-ex{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:10px;
+  font-size:13px;direction:ltr;text-align:left;margin-bottom:8px;}
+.gram-ok{background:rgba(62,200,122,.1);border:1px solid rgba(62,200,122,.25);}
+.gram-no{background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.25);}
+.gram-note{background:var(--surf2);border-radius:10px;padding:10px 12px;
+  font-size:12px;color:var(--mut);line-height:1.6;}
+
+/* Tip */
+.tip-btn{width:100%;background:none;border:1px dashed var(--brd);border-radius:10px;
+  color:var(--acc);font-family:'Tajawal',sans-serif;font-size:13px;padding:9px;cursor:pointer;}
+.tip-box{margin-top:8px;padding:10px;background:rgba(139,58,158,.08);
+  border-radius:10px;font-size:13px;color:var(--acc);line-height:1.65;}
+
+/* Note */
+.note-ta{width:100%;background:var(--surf2);border:1px solid var(--brd);border-radius:10px;
+  color:var(--txt);font-family:'Tajawal',sans-serif;font-size:13px;
+  padding:10px 12px;outline:none;resize:none;min-height:80px;direction:rtl;}
+
+/* Buttons */
+.btn-p{padding:13px;background:var(--acc);color:#fff;border:none;border-radius:12px;
+  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-top:4px;}
+.btn-s{padding:13px;background:var(--surf2);color:var(--txt);border:1px solid var(--brd);
+  border-radius:12px;font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;}
+.btn-d{padding:13px;background:var(--red);color:#fff;border:none;border-radius:12px;
+  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-top:8px;}
+
+/* Search */
+.srch{width:100%;background:var(--surf);border:1px solid var(--brd);border-radius:10px;
+  color:var(--txt);font-family:'Tajawal',sans-serif;font-size:14px;
+  padding:11px 14px;outline:none;margin-bottom:8px;}
+
+/* Library card */
+.lcard{background:var(--surf);border:1px solid var(--brd);border-radius:12px;
+  padding:12px 14px;margin-bottom:8px;cursor:pointer;position:relative;}
+
+/* Flashcard */
+.fc-wrap{cursor:pointer;min-height:220px;margin-bottom:16px;}
+.fc-inner{position:relative;transition:transform .55s cubic-bezier(.4,0,.2,1);
+  transform-style:preserve-3d;min-height:220px;}
+.fc-inner.flip{transform:rotateY(180deg);}
+.fc-face{backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:20px;padding:36px 24px;text-align:center;
+  position:absolute;top:0;left:0;width:100%;min-height:220px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.fc-front{background:linear-gradient(135deg,#28184a,#1e1e3a);border:1px solid var(--brd);}
+.fc-back{background:linear-gradient(135deg,#1e3a28,#1a2e1e);border:1px solid var(--grn);transform:rotateY(180deg);}
+
+/* Quiz */
+.qopt{display:block;width:100%;margin-bottom:8px;padding:13px 14px;
+  background:var(--surf);border:1px solid var(--brd);border-radius:12px;
+  font-family:'Tajawal',sans-serif;font-size:14px;color:var(--txt);cursor:pointer;text-align:right;}
+.qopt.ok{background:rgba(62,200,122,.12);border-color:var(--grn);color:var(--grn);}
+.qopt.no{background:rgba(224,85,85,.12);border-color:var(--red);color:var(--red);}
+
+/* Stats */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.scard{background:var(--surf);border:1px solid var(--brd);border-radius:14px;padding:14px;text-align:center;}
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.bitem{background:var(--surf2);border:1px solid var(--brd);border-radius:12px;
+  padding:10px 8px;text-align:center;opacity:.4;}
+.bitem.got{background:rgba(139,58,158,.12);border-color:var(--acc);opacity:1;}
+
+/* Prog bar */
+.prog{height:5px;background:var(--surf2);border-radius:99px;overflow:hidden;margin-bottom:6px;}
+.pfill{height:100%;background:var(--acc);border-radius:99px;transition:width .4s;}
+
+/* Filter overlay */
+.fov{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;
+  display:flex;align-items:flex-end;justify-content:center;}
+.fsheet{background:var(--surf);border-radius:20px 20px 0 0;
+  padding:20px 16px calc(36px + var(--safe-bot));width:100%;max-width:460px;border:1px solid var(--brd);}
+.pill{padding:8px 16px;border-radius:20px;border:1px solid var(--brd);background:none;
+  color:var(--txt);font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;margin:3px;}
+
+/* Score ring */
+.sring{width:110px;height:110px;border-radius:50%;border:4px solid var(--acc);
+  display:flex;align-items:center;justify-content:center;background:rgba(139,58,158,.08);}
+
+/* Empty */
+.empty{text-align:center;padding:40px 0;}
+
+/* Back btn */
+.back{background:none;border:none;color:var(--mut);font-family:'Tajawal',sans-serif;
+  font-size:14px;cursor:pointer;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+
+/* Light mode */
+body.light{--bg:#f0eef2;--surf:#fff;--surf2:#e8e4ec;--brd:#d8d0e0;
+  --txt:#141428;--mut:#7a6a88;--acc:#8b3a9e;--acc2:#c47abf;}
+body.light .hero{background:linear-gradient(145deg,#e0d0f0,#d0c0e8);}
+body.light .fc-front{background:linear-gradient(135deg,#e0d0f0,#d0c0e8);}
+body.light .fc-back{background:linear-gradient(135deg,#d0f0e0,#c0e8d0);}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="header">
+  <div>
+    <div class="logo-en">Worldly</div>
+    <div class="logo-sub">كلمة يومية · RQN</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button onclick="toggleDark()" id="darkBtn" style="background:none;border:1px solid var(--brd);border-radius:20px;padding:5px 10px;cursor:pointer;font-size:14px;">☀️</button>
+    <div style="background:var(--surf2);border:1px solid var(--brd);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--acc);" id="savedCnt">📚 0</div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="page on" id="p-home"><div id="homeDiv"></div></div>
+  <div class="page" id="p-library"><div id="libDiv"></div></div>
+  <div class="page" id="p-flash"><div id="flashDiv"></div></div>
+  <div class="page" id="p-quiz"><div id="quizDiv"></div></div>
+  <div class="page" id="p-stats"><div id="statsDiv"></div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="go('home')">🏠</button>
+  <button class="tab" onclick="go('library')">📚</button>
+  <button class="tab" onclick="go('flash')">🔁</button>
+  <button class="tab" onclick="go('quiz')">🧠</button>
+  <button class="tab" onclick="go('stats')">📊</button>
+</div>
+
+<div class="fov" id="fov" style="display:none" onclick="closeFilt()">
+  <div class="fsheet" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <span style="font-size:16px;font-weight:800;">🎯 فلترة الكلمات</span>
+      <button onclick="closeFilt()" style="background:none;border:none;color:var(--mut);font-size:20px;cursor:pointer;">✕</button>
+    </div>
+    <div style="font-size:12px;font-weight:700;color:var(--mut);margin-bottom:8px;">المستوى</div>
+    <div id="lvlPills" style="margin-bottom:16px;"></div>
+    <div style="font-size:12px;font-weight:700;color:var(--mut);margin-bottom:8px;">التصنيف</div>
+    <div id="catPills" style="margin-bottom:20px;"></div>
+    <button onclick="applyFilt()" style="width:100%;padding:13px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer;">توليد كلمة بهذا الفلتر</button>
+  </div>
+</div>
+
+</div>
+<script>
+// ── Constants ──────────────────────────────────────────────────────────────
+const LEVELS=["الكل","مبتدئ","متوسط","متقدم"];
+const CATS=["الكل","شغل","مشاعر","شخصية","تواصل","تقنية","عام"];
+const LCOL={مبتدئ:"#3ec87a",متوسط:"#f0a030",متقدم:"#e05555"};
+const CICO={شغل:"💼",مشاعر:"❤️",شخصية:"🌟",تواصل:"🗣️",تقنية:"💻",عام:"🌐"};
+
+// ── State ──────────────────────────────────────────────────────────────────
+let st={words:[],saved:[],notes:{},curIdx:0,dark:true,fLevel:"الكل",fCat:"الكل",best:0,quizzes:0,streak:1,lastVisit:""};
+let gen=false, curtab="home";
+let fcIdx=0,fcFlip=false,fcDone=false;
+let qqs=[],qcur=0,qsc=0,qsel=null,qdone=false;
+let libSel=null;
+let tipOpen=false,gramOpen=false,noteEdit=false;
+
+function load(){
+  try{
+    const s=JSON.parse(localStorage.getItem("worldly_pwa")||"{}");
+    st={...st,...s};
+    const today=new Date().toDateString();
+    const yest=new Date(Date.now()-86400000).toDateString();
+    if(st.lastVisit===today){}
+    else if(st.lastVisit===yest)st.streak=(st.streak||0)+1;
+    else st.streak=1;
+    st.lastVisit=today;
+  }catch(e){}
+}
+function save(){localStorage.setItem("worldly_pwa",JSON.stringify(st));}
+
+// ── Claude API ─────────────────────────────────────────────────────────────
+async function genWord(){
+  if(gen)return;
+  gen=true; tipOpen=false; gramOpen=false; noteEdit=false;
+  drawHome();
+  const used=st.words.slice(-20).map(w=>w.word).join(",");
+  const lvl=st.fLevel==="الكل"?["مبتدئ","متوسط","متقدم"][Math.floor(Math.random()*3)]:st.fLevel;
+  const cat=st.fCat==="الكل"?"عام":st.fCat;
+  const prompt=`علّم العرب إنجليزي. اختر كلمة ${lvl==="مبتدئ"?"سهلة":lvl==="متقدم"?"متقدمة":"متوسطة"} عن "${cat}". لا تكرر: ${used||"لا"}.
+JSON فقط:
+{"word":"","phonetic":"","type":"اسم/فعل/صفة","arabic":"","level":"${lvl}","cat":"${cat}","definition":"جملة","examples":[{"en":"","ar":""},{"en":"","ar":""},{"en":"","ar":""}],"tip":"","grammar":{"rule":"","explanation":"جملتان","correct":"","wrong":"","tip":""}}`;
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:800,messages:[{role:"user",content:prompt}]})
+    });
+    const d=await r.json();
+    const t=(d.content||[]).find(b=>b.type==="text")?.text||"";
+    const w=JSON.parse(t.replace(/```json|```/g,"").trim());
+    st.words.push(w); st.curIdx=st.words.length-1; save();
+  }catch(e){
+    document.getElementById("homeDiv").innerHTML+=`<p style="color:var(--red);text-align:center;font-size:12px;margin-top:8px;">تعذّر التوليد — جرب مرة أخرى</p>`;
+  }
+  gen=false; drawHome(); updCnt();
+}
+
+// ── Speak ──────────────────────────────────────────────────────────────────
+function spk(txt,rate=1){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(txt);
+  u.lang="en-US";u.rate=rate;
+  const vs=window.speechSynthesis.getVoices();
+  const v=vs.find(v=>v.lang.startsWith("en")&&v.localService)||vs.find(v=>v.lang.startsWith("en"));
+  if(v)u.voice=v;
+  window.speechSynthesis.speak(u);
+}
+
+function shareW(word){
+  const w=st.words.find(x=>x.word===word)||st.saved.find(x=>x.word===word);
+  if(!w)return;
+  const t=`📚 كلمة اليوم من Worldly\n\n🔤 ${w.word}\n🗣️ ${w.phonetic}\n📖 ${w.arabic}\n\n💡 ${w.definition}\n\n✨ Powered by RQN`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(t)}`,"_blank");
+}
+
+// ── Word HTML ──────────────────────────────────────────────────────────────
+function wordHTML(w,opts={}){
+  if(!w)return"";
+  const saved=st.saved.some(s=>s.word===w.word);
+  const note=st.notes[w.word]||"";
+  const lc=LCOL[w.level]||"var(--acc)";
+  return`
+  ${opts.back?`<button class="back" onclick="${opts.backFn}()">← رجوع</button>`:""}
+  <div class="hero">
+    <div>
+      <span class="badge" style="background:${lc}22;color:${lc};border:1px solid ${lc}44">${w.level}</span>
+      <span class="badge" style="background:rgba(139,58,158,.15);color:var(--acc);border:1px solid rgba(139,58,158,.3)">${CICO[w.cat]||""} ${w.cat}</span>
+    </div>
+    <div class="word-big">${w.word}</div>
+    <div class="word-ph">${w.phonetic}</div>
+    <div class="word-ar">${w.arabic}</div>
+    <div class="btns3">
+      <button class="abtn" style="background:rgba(139,58,158,.12);color:var(--acc);border-color:rgba(139,58,158,.35)" onclick="spk('${esc(w.word)}',1)">🔊 استمع</button>
+      <button class="abtn" style="background:rgba(37,211,102,.12);color:#25d366;border-color:rgba(37,211,102,.35)" onclick="shareW('${esc(w.word)}')">📤 شارك</button>
+      ${opts.next?`<button class="abtn" style="background:rgba(255,255,255,.06);color:var(--txt);border-color:var(--brd)" onclick="genWord()" ${gen?"disabled":""}>↻ جديدة</button>`:""}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">📖 التعريف</div>
+    <p style="font-size:14px;line-height:1.75">${w.definition}</p>
+  </div>
+
+  <div class="card">
+    <div class="lbl">💬 أمثلة</div>
+    ${w.examples.map(ex=>`
+      <div class="ex-block">
+        <div class="ex-row">
+          <p class="ex-en">"${ex.en}"</p>
+          <button class="spk-sm" onclick="spk('${esc(ex.en)}',.85)">🔊</button>
+        </div>
+        <p class="ex-ar">${ex.ar}</p>
+      </div>`).join("")}
+  </div>
+
+  ${w.grammar?`
+  <div class="card" style="padding:0;overflow:hidden;">
+    <button class="gram-head" onclick="toggleGram()">
+      <span class="lbl" style="margin:0">📐 القاعدة النحوية</span>
+      <span style="font-size:13px;color:var(--acc2);font-weight:700;display:flex;align-items:center;gap:6px">${w.grammar.rule} <span id="garrw" style="font-size:10px;color:var(--mut)">▼</span></span>
+    </button>
+    <div class="gram-body" id="gramBody" style="display:none">
+      <p style="font-size:13px;line-height:1.75;margin-bottom:14px;margin-top:12px">${w.grammar.explanation}</p>
+      <div class="gram-ex gram-ok"><span>✅</span><span style="color:var(--txt)">${w.grammar.correct}</span></div>
+      <div class="gram-ex gram-no"><span>❌</span><span style="color:var(--txt)">${w.grammar.wrong}</span></div>
+      <div class="gram-note" style="margin-top:10px">💡 ${w.grammar.tip}</div>
+    </div>
+  </div>`:""}
+
+  <div class="card">
+    <button class="tip-btn" id="tipBtnEl" onclick="toggleTip()">${tipOpen?"💡 إخفاء النصيحة":"💡 نصيحة لتذكر الكلمة"}</button>
+    <div class="tip-box" id="tipBoxEl" style="display:${tipOpen?"block":"none"}">${w.tip}</div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span class="lbl" style="margin:0">📝 ملاحظتي</span>
+      <button onclick="toggleNote('${esc(w.word)}')" style="background:none;border:none;color:var(--acc);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer" id="noteBtnEl">${noteEdit?"حفظ ✓":"تعديل ✏️"}</button>
+    </div>
+    <div id="noteDispEl" style="font-size:13px;color:${note?"var(--txt)":"var(--mut)"};line-height:1.6;min-height:30px;display:${noteEdit?"none":"block"}">${note||"لا توجد ملاحظة — اضغط تعديل"}</div>
+    <textarea id="noteInpEl" class="note-ta" style="display:${noteEdit?"block":"none"}">${note}</textarea>
+  </div>
+
+  ${opts.save!==false?`<button class="btn-p" style="background:${saved?"var(--grn)":"var(--acc)"}" onclick="toggleSave('${esc(w.word)}')">${saved?"✓ محفوظة":"حفظ الكلمة"}</button>`:""}
+  ${opts.del?`<button class="btn-d" onclick="delWord('${esc(w.word)}')">🗑 حذف من المكتبة</button>`:""}
+  `;
+}
+
+function esc(s){return(s||"").replace(/'/g,"\\'").replace(/"/g,'\\"');}
+
+function toggleTip(){
+  tipOpen=!tipOpen;
+  const b=document.getElementById("tipBtnEl");
+  const d=document.getElementById("tipBoxEl");
+  if(b)b.textContent=tipOpen?"💡 إخفاء النصيحة":"💡 نصيحة لتذكر الكلمة";
+  if(d)d.style.display=tipOpen?"block":"none";
+}
+function toggleGram(){
+  gramOpen=!gramOpen;
+  const b=document.getElementById("gramBody");
+  const a=document.getElementById("garrw");
+  if(b)b.style.display=gramOpen?"block":"none";
+  if(a)a.textContent=gramOpen?"▲":"▼";
+}
+function toggleNote(word){
+  if(noteEdit){
+    const v=document.getElementById("noteInpEl")?.value||"";
+    st.notes[word]=v; save();
+    const d=document.getElementById("noteDispEl");
+    const i=document.getElementById("noteInpEl");
+    const b=document.getElementById("noteBtnEl");
+    if(d){d.style.display="block";d.textContent=v||"لا توجد ملاحظة — اضغط تعديل";d.style.color=v?"var(--txt)":"var(--mut)";}
+    if(i)i.style.display="none";
+    if(b)b.textContent="تعديل ✏️";
+    noteEdit=false;
+  } else {
+    const d=document.getElementById("noteDispEl");
+    const i=document.getElementById("noteInpEl");
+    const b=document.getElementById("noteBtnEl");
+    if(d)d.style.display="none";
+    if(i){i.style.display="block";i.focus();}
+    if(b)b.textContent="حفظ ✓";
+    noteEdit=true;
+  }
+}
+
+// ── Pages ──────────────────────────────────────────────────────────────────
+function drawHome(){
+  const d=document.getElementById("homeDiv");
+  const hasF=st.fLevel!=="الكل"||st.fCat!=="الكل";
+  let h=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <button onclick="openFilt()" style="display:flex;align-items:center;gap:6px;background:${hasF?"var(--acc)":"none"};border:1px solid ${hasF?"var(--acc)":"var(--brd)"};border-radius:20px;padding:7px 14px;color:${hasF?"#fff":"var(--mut)"};font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;">
+      🎯 ${hasF?`${st.fLevel!=="الكل"?st.fLevel:""}${st.fLevel!=="الكل"&&st.fCat!=="الكل"?" · ":""}${st.fCat!=="الكل"?(CICO[st.fCat]||"")+" "+st.fCat:""}`.trim():"فلترة الكلمات"}
+    </button>
+    <span style="font-size:11px;color:var(--mut)">${st.words.length} كلمة</span>
+  </div>`;
+  if(gen){
+    h+=`<div class="gen-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span style="font-size:13px;color:var(--mut)">جاري التوليد...</span></div>`;
+  } else if(!st.words.length){
+    h+=`<div class="empty">
+      <div style="font-size:56px;margin-bottom:12px">✨</div>
+      <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">ابدأ رحلتك!</h2>
+      <p style="font-size:13px;color:var(--mut);margin-bottom:16px">اضغط لتوليد أول كلمة</p>
+      <button onclick="genWord()" style="padding:13px 36px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">توليد كلمة 🤖</button>
+    </div>`;
+  } else {
+    h+=wordHTML(st.words[st.curIdx],{next:true,save:true});
+  }
+  d.innerHTML=h;
+}
+
+function drawLib(){
+  const d=document.getElementById("libDiv");
+  if(libSel){
+    d.innerHTML=wordHTML(libSel,{back:true,backFn:"closeLib",del:true,save:false});
+    return;
+  }
+  const q=(d.querySelector(".srch")?.value||"").toLowerCase();
+  const f=st.saved.filter(w=>w.word.toLowerCase().includes(q)||w.arabic.includes(q));
+  let h=`<input class="srch" placeholder="ابحث عن كلمة..." oninput="drawLib()" dir="auto" value="${q}"/>
+  <div style="font-size:12px;color:var(--mut);margin-bottom:10px">${st.saved.length} كلمة محفوظة</div>`;
+  if(!st.saved.length){
+    h+=`<div class="empty"><div style="font-size:44px">📭</div><p style="font-weight:700;margin-top:8px">لا توجد كلمات بعد</p></div>`;
+  } else if(!f.length){
+    h+=`<div class="empty"><div style="font-size:44px">🔍</div><p style="font-weight:700;margin-top:8px">لا توجد نتائج</p></div>`;
+  } else {
+    f.forEach(w=>{
+      const lc=LCOL[w.level]||"var(--acc)";
+      h+=`<div class="lcard" onclick="openLib('${esc(w.word)}')">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span style="font-family:'Playfair Display',serif;font-size:18px">${w.word}</span>
+          <span style="font-size:9px;background:${lc}22;color:${lc};border-radius:6px;padding:2px 7px">${w.level}</span>
+          ${w.grammar?`<span style="font-size:9px;background:rgba(196,122,191,.15);color:var(--acc2);border-radius:6px;padding:2px 7px">📐</span>`:""}
+        </div>
+        <p style="font-size:14px;font-weight:700;color:var(--acc);margin-bottom:2px">${w.arabic}</p>
+        <p style="font-size:11px;color:var(--mut);direction:ltr;text-align:right">${w.phonetic}</p>
+        <span style="position:absolute;top:14px;left:14px;color:var(--mut);font-size:16px">›</span>
+      </div>`;
+    });
+  }
+  d.innerHTML=h;
+}
+
+function openLib(word){
+  libSel=st.saved.find(w=>w.word===word);
+  tipOpen=false;gramOpen=false;noteEdit=false;
+  drawLib();
+}
+function closeLib(){libSel=null;drawLib();}
+
+function drawFlash(){
+  const d=document.getElementById("flashDiv");
+  if(!st.saved.length){d.innerHTML=`<div class="empty"><div style="font-size:44px">📭</div><p style="font-weight:700;margin-top:8px">ما عندك كلمات محفوظة</p></div>`;return;}
+  if(fcDone){
+    d.innerHTML=`<div style="text-align:center;padding:40px 0;display:flex;flex-direction:column;align-items:center;gap:14px">
+      <span style="font-size:56px">🎉</span>
+      <h2 style="font-size:20px;font-weight:800">خلصت كل البطاقات!</h2>
+      <p style="font-size:13px;color:var(--mut)">راجعت ${st.saved.length} كلمة</p>
+      <button onclick="resetFlash()" style="padding:13px 36px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">أعد من البداية</button>
+    </div>`;return;
+  }
+  const w=st.saved[fcIdx];
+  d.innerHTML=`
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+      <span style="font-size:12px;color:var(--mut)">${fcIdx+1} من ${st.saved.length}</span>
+      <span style="font-size:12px;color:var(--mut)">اضغط البطاقة 👆</span>
+    </div>
+    <div class="prog"><div class="pfill" style="width:${(fcIdx/st.saved.length)*100}%"></div></div>
+    <br/>
+    <div class="fc-wrap" onclick="flipFC()">
+      <div class="fc-inner ${fcFlip?"flip":""}">
+        <div class="fc-face fc-front">
+          <div style="font-size:10px;color:var(--mut);font-weight:700;letter-spacing:1px;text-transform:uppercase">ما معنى هذه الكلمة؟</div>
+          <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:700">${w.word}</div>
+          <div style="font-size:12px;color:var(--mut);direction:ltr">${w.phonetic}</div>
+          <button onclick="event.stopPropagation();spk('${esc(w.word)}',.85)" style="background:rgba(139,58,158,.15);border:1px solid rgba(139,58,158,.3);border-radius:20px;padding:5px 14px;color:var(--acc);font-size:12px;cursor:pointer;font-family:'Tajawal',sans-serif">🔊 استمع</button>
+        </div>
+        <div class="fc-face fc-back">
+          <div style="font-size:10px;color:var(--grn);font-weight:700;letter-spacing:1px;text-transform:uppercase">المعنى</div>
+          <div style="font-size:26px;font-weight:800">${w.arabic}</div>
+          <div style="font-size:12px;color:var(--mut);text-align:center;padding:0 14px;line-height:1.6">${w.definition}</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-s" style="flex:1" ${fcIdx===0?"disabled":""} onclick="prevFC()">← السابق</button>
+      <button style="flex:1;padding:13px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer" onclick="nextFC()">${fcIdx+1>=st.saved.length?"إنهاء ✓":"التالي →"}</button>
+    </div>`;
+}
+
+function flipFC(){fcFlip=!fcFlip;drawFlash();}
+function nextFC(){if(fcIdx+1>=st.saved.length)fcDone=true;else{fcIdx++;fcFlip=false;}drawFlash();}
+function prevFC(){if(fcIdx>0){fcIdx--;fcFlip=false;drawFlash();}}
+function resetFlash(){fcIdx=0;fcFlip=false;fcDone=false;drawFlash();}
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function drawQuiz(){
+  const d=document.getElementById("quizDiv");
+  if(st.saved.length<3){d.innerHTML=`<div class="empty"><div style="font-size:44px">📚</div><p style="font-weight:700;margin-top:8px">تحتاج 3 كلمات على الأقل</p></div>`;return;}
+  if(!qqs.length){
+    d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px">
+      <span style="font-size:56px">🧠</span>
+      <h2 style="font-size:20px;font-weight:800">اختبر معلوماتك</h2>
+      <p style="font-size:13px;color:var(--mut)">سيتم اختبارك على ${st.saved.length} كلمة</p>
+      <button onclick="startQuiz()" style="padding:13px 40px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">ابدأ الاختبار</button>
+    </div>`;return;
+  }
+  if(qdone){
+    const pct=Math.round((qsc/qqs.length)*100);
+    d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px">
+      <div class="sring"><span style="font-size:28px;font-weight:800;color:var(--acc)">${pct}%</span></div>
+      <h2 style="font-size:20px;font-weight:800">${pct>=80?"ممتاز! 🎉":pct>=50?"جيد 👍":"استمر 💪"}</h2>
+      <p style="font-size:13px;color:var(--mut)">${qsc} من ${qqs.length} إجابة صحيحة</p>
+      <div style="display:flex;gap:10px">
+        <button onclick="startQuiz()" style="padding:13px 28px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer">أعد الاختبار</button>
+        <button onclick="resetQuiz()" class="btn-s" style="padding:13px 24px">رجوع</button>
+      </div>
+    </div>`;return;
+  }
+  const q=qqs[qcur];
+  let h=`<div class="prog"><div class="pfill" style="width:${(qcur/qqs.length)*100}%"></div></div>
+  <p style="font-size:11px;color:var(--mut);text-align:center;margin-bottom:12px">${qcur+1} من ${qqs.length}</p>
+  <div class="card" style="font-size:16px;font-weight:600;line-height:1.65;text-align:center;margin-bottom:12px">${q.question}</div>`;
+  q.options.forEach((opt,i)=>{
+    let cls="qopt";
+    if(qsel!==null){if(i===q.correct)cls+=" ok";else if(i===qsel)cls+=" no";}
+    h+=`<button class="${cls}" ${qsel!==null?"disabled":""} onclick="ansQ(${i})">${opt}</button>`;
+  });
+  d.innerHTML=h;
+}
+
+function startQuiz(){
+  st.quizzes++;save();
+  const sel=shuffle(st.saved).slice(0,8);
+  qqs=sel.map(word=>{
+    const eToA=Math.random()>.5;
+    const pool=st.words.filter(w=>w.word!==word.word);
+    const wr=shuffle(pool).slice(0,3);
+    const ci=Math.floor(Math.random()*4);const opts=[];let wi=0;
+    for(let i=0;i<4;i++){if(i===ci)opts.push(eToA?word.arabic:word.word);else opts.push(eToA?wr[wi]?.arabic||"—":wr[wi]?.word||"—");wi++;}
+    return{question:eToA?`ما معنى "${word.word}" بالعربي؟`:`ما الكلمة الإنجليزية لـ "${word.arabic}"؟`,options:opts,correct:ci};
+  });
+  qcur=0;qsc=0;qsel=null;qdone=false;drawQuiz();
+}
+function ansQ(idx){
+  if(qsel!==null)return; qsel=idx;
+  document.querySelectorAll(".qopt").forEach((b,i)=>{
+    b.disabled=true;
+    if(i===qqs[qcur].correct)b.classList.add("ok");
+    else if(i===idx)b.classList.add("no");
+  });
+  if(idx===qqs[qcur].correct)qsc++;
+  setTimeout(()=>{
+    qcur++;qsel=null;
+    if(qcur>=qqs.length){
+      const pct=Math.round((qsc/qqs.length)*100);
+      if(pct>st.best){st.best=pct;save();}
+      qdone=true;
+    }
+    drawQuiz();
+  },900);
+}
+function resetQuiz(){qqs=[];qcur=0;qsc=0;qsel=null;qdone=false;drawQuiz();}
+
+function drawStats(){
+  const badges=[
+    {icon:"⭐",label:"نجم ناشئ",desc:"5 كلمات",ok:st.saved.length>=5},
+    {icon:"🌟",label:"متعلم جاد",desc:"10 كلمات",ok:st.saved.length>=10},
+    {icon:"📐",label:"قواعدي",desc:"كلمة بقاعدة",ok:st.words.some(w=>w.grammar)},
+    {icon:"🧠",label:"أول اختبار",desc:"أكمل اختباراً",ok:st.quizzes>=1},
+    {icon:"🏆",label:"متفوق",desc:"80%+",ok:st.best>=80},
+    {icon:"🔥",label:"ثابت",desc:"3 أيام متتالية",ok:st.streak>=3},
+    {icon:"🤖",label:"مستكشف AI",desc:"ولّد 10 كلمات",ok:st.words.length>=10},
+    {icon:"🎯",label:"مثالي",desc:"100%",ok:st.best===100},
+  ];
+  document.getElementById("statsDiv").innerHTML=`
+  <h2 style="font-size:18px;font-weight:800;margin-bottom:14px">إحصائياتك 📊</h2>
+  <div class="card" style="text-align:center;margin-bottom:10px">
+    <div style="font-size:44px">🔥</div>
+    <div style="font-size:48px;font-weight:800;color:var(--acc);line-height:1">${st.streak}</div>
+    <div style="font-size:13px;color:var(--mut);margin-top:4px">يوم متتالي</div>
+  </div>
+  <div class="sgrid">
+    ${[{icon:"📚",label:"محفوظة",v:st.saved.length},{icon:"🤖",label:"كلمات AI",v:st.words.length},{icon:"🧠",label:"اختبارات",v:st.quizzes},{icon:"🏆",label:"أعلى نتيجة",v:st.best+"%"}]
+    .map(s=>`<div class="scard"><div style="font-size:26px;margin-bottom:4px">${s.icon}</div><div style="font-size:26px;font-weight:800;color:var(--acc)">${s.v}</div><div style="font-size:10px;color:var(--mut);margin-top:2px">${s.label}</div></div>`).join("")}
+  </div>
+  <div class="card">
+    <div style="font-size:13px;font-weight:700;margin-bottom:12px">🏅 الإنجازات</div>
+    <div class="bgrid">
+      ${badges.map(b=>`<div class="bitem ${b.ok?"got":""}">
+        <div style="font-size:26px;margin-bottom:3px">${b.icon}</div>
+        <div style="font-size:11px;font-weight:700;color:${b.ok?"var(--acc)":"var(--mut)"}">${b.label}</div>
+        <div style="font-size:10px;color:var(--mut);margin-top:1px">${b.desc}</div>
+        ${b.ok?`<div style="font-size:10px;color:var(--grn);margin-top:3px;font-weight:700">✓ محقق</div>`:""}
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
+
+// ── Filter ──────────────────────────────────────────────────────────────────
+function openFilt(){
+  document.getElementById("lvlPills").innerHTML=LEVELS.map(l=>`<button class="pill" style="background:${st.fLevel===l?"var(--acc)":"none"};border-color:${st.fLevel===l?"var(--acc)":"var(--brd)"};color:${st.fLevel===l?"#fff":"var(--txt)"}" onclick="setL('${l}')">${l}</button>`).join("");
+  document.getElementById("catPills").innerHTML=CATS.map(c=>`<button class="pill" style="background:${st.fCat===c?"var(--acc2)":"none"};border-color:${st.fCat===c?"var(--acc2)":"var(--brd)"};color:${st.fCat===c?"#fff":"var(--txt)"}" onclick="setC('${c}')">${c==="الكل"?"🌐 الكل":(CICO[c]||"")+" "+c}</button>`).join("");
+  document.getElementById("fov").style.display="flex";
+}
+function closeFilt(){document.getElementById("fov").style.display="none";}
+function setL(l){st.fLevel=l;openFilt();}
+function setC(c){st.fCat=c;openFilt();}
+function applyFilt(){closeFilt();genWord();}
+
+// ── Nav ─────────────────────────────────────────────────────────────────────
+function go(tab){
+  curtab=tab;tipOpen=false;gramOpen=false;noteEdit=false;
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("on"));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("on"));
+  document.getElementById("p-"+tab).classList.add("on");
+  const tabs=["home","library","flash","quiz","stats"];
+  document.querySelectorAll(".tab")[tabs.indexOf(tab)]?.classList.add("on");
+  if(tab==="library"){libSel=null;drawLib();}
+  if(tab==="flash"){fcIdx=0;fcFlip=false;fcDone=false;drawFlash();}
+  if(tab==="quiz")drawQuiz();
+  if(tab==="stats")drawStats();
+}
+
+function toggleSave(word){
+  const w=st.words.find(x=>x.word===word);
+  if(!w)return;
+  const i=st.saved.findIndex(s=>s.word===word);
+  if(i>=0)st.saved.splice(i,1);else st.saved.push(w);
+  save();updCnt();
+  if(curtab==="home")drawHome();
+}
+function delWord(word){
+  st.saved=st.saved.filter(s=>s.word!==word);
+  save();updCnt();libSel=null;drawLib();
+}
+function updCnt(){document.getElementById("savedCnt").textContent="📚 "+st.saved.length;}
+
+function toggleDark(){
+  st.dark=!st.dark;save();
+  document.body.classList.toggle("light",!st.dark);
+  document.getElementById("darkBtn").textContent=st.dark?"☀️":"🌙";
+}
+
+// ── Init ────────────────────────────────────────────────────────────────────
+load();save();
+if(!st.dark)document.body.classList.add("light");
+document.getElementById("darkBtn").textContent=st.dark?"☀️":"🌙";
+updCnt();
+window.speechSynthesis?.getVoices();
+window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
+if(st.words.length===0)genWord();else drawHome();
+
+// PWA Service Worker
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("/sw.js").catch(()=>{});
+}
+</script>
+</body>
+</html>
