@@ -429,15 +429,17 @@ function drawHome(){
   </div>`;
   if(gen){
     h+=`<div class="gen-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span style="font-size:13px;color:var(--mut)">جاري التوليد...</span></div>`;
-  } else if(!st.words.length){
-    h+=`<div class="empty">
-      <div style="font-size:56px;margin-bottom:12px">✨</div>
-      <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">ابدأ رحلتك!</h2>
-      <p style="font-size:13px;color:var(--mut);margin-bottom:16px">اضغط لتوليد أول كلمة</p>
-      <button onclick="genWord()" style="padding:13px 36px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">توليد كلمة 🤖</button>
-    </div>`;
   } else {
-    h+=wordHTML(st.words[st.curIdx],{next:true,save:true});
+    const w=st.words[st.curIdx];
+    if(w){
+      h+=wordHTML(w,{next:true,save:true});
+    } else {
+      h+=`<div class="empty">
+        <div style="font-size:56px;margin-bottom:12px">✨</div>
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">ابدأ رحلتك!</h2>
+        <button onclick="location.reload()" style="padding:13px 36px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">تحديث الصفحة 🔄</button>
+      </div>`;
+    }
   }
   d.innerHTML=h;
 }
@@ -615,7 +617,7 @@ function drawStats(){
     <div style="font-size:13px;color:var(--mut);margin-top:4px">يوم متتالي</div>
   </div>
   <div class="sgrid">
-    ${[{icon:"📚",label:"محفوظة",v:st.saved.length},{icon:"🤖",label:"كلمات AI",v:st.words.length},{icon:"🧠",label:"اختبارات",v:st.quizzes},{icon:"🏆",label:"أعلى نتيجة",v:st.best+"%"}]
+    ${[{icon:"📚",label:"محفوظة",v:st.saved.length},{icon:"📖",label:"إجمالي الكلمات",v:st.words.length},{icon:"🧠",label:"اختبارات",v:st.quizzes},{icon:"🏆",label:"أعلى نتيجة",v:st.best+"%"}]
     .map(s=>`<div class="scard"><div style="font-size:26px;margin-bottom:4px">${s.icon}</div><div style="font-size:26px;font-weight:800;color:var(--acc)">${s.v}</div><div style="font-size:10px;color:var(--mut);margin-top:2px">${s.label}</div></div>`).join("")}
   </div>
   <div class="card">
@@ -766,25 +768,28 @@ const WORDS100=[
 {word:"Obsolete",phonetic:"/ˈɒbsəliːt/",type:"صفة",arabic:"قديم متقادم",level:"متوسط",cat:"تقنية",definition:"لم يعد مستخدماً",examples:[{en:"Obsolete technology.",ar:"تقنية متقادمة."},{en:"Become obsolete.",ar:"يصبح قديماً."},{en:"Render obsolete.",ar:"يجعله بلا فائدة."}],tip:"طاح من الاستخدام",grammar:{rule:"become obsolete",explanation:"نقول 'become obsolete' في المضارع التام: has become.",correct:"This technology has become obsolete.",wrong:"This technology has became obsolete.",tip:"has become وليس has became"}},
 ];
 
-load();save();
+load();
+
+// مسح البيانات القديمة لو ما فيها كلمات
+if(!st.words||st.words.length===0){
+  st.words=WORDS100;
+  st.curIdx=0;
+  st.saved=st.saved||[];
+  st.notes=st.notes||{};
+  save();
+}
+
+// إضافة الكلمات الجديدة للبيانات الموجودة
+WORDS100.forEach(w=>{if(!st.words.find(x=>x.word===w.word))st.words.push(w);});
+if(st.curIdx<0||st.curIdx>=st.words.length) st.curIdx=0;
+save();
+
 if(!st.dark)document.body.classList.add("light");
 document.getElementById("darkBtn").textContent=st.dark?"☀️":"🌙";
 updCnt();
 window.speechSynthesis?.getVoices();
 window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
-
-// Load seed words if first time
-if(st.words.length===0){
-  st.words=WORDS100;
-  st.curIdx=0;
-  save();
-  drawHome();
-} else {
-  // Add any missing seed words
-  WORDS100.forEach(w=>{if(!st.words.find(x=>x.word===w.word))st.words.push(w);});
-  save();
-  drawHome();
-}
+drawHome();
 
 // PWA Service Worker
 if("serviceWorker" in navigator){
