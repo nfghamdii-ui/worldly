@@ -315,18 +315,18 @@ function wordHTML(w,opts={}){
   return`
   ${opts.back?`<button class="back" onclick="${opts.backFn}()">← رجوع</button>`:""}
   <div class="hero">
-    <div>
-      <span class="badge" style="background:${lc}22;color:${lc};border:1px solid ${lc}44">${w.level}</span>
-      <span class="badge" style="background:rgba(139,58,158,.15);color:var(--acc);border:1px solid rgba(139,58,158,.3)">${CICO[w.cat]||""} ${w.cat}</span>
+    <div style="display:flex;justify-content:center;gap:16px;margin-bottom:12px;">
+      <span style="font-size:13px;color:${lc};font-weight:700;">${w.level}</span>
+      <span style="font-size:13px;color:var(--acc2);font-weight:700;">${CICO[w.cat]||""} ${w.cat}</span>
     </div>
     <div class="word-big">${w.word}</div>
     <div class="word-ph">${w.phonetic}</div>
     <div class="word-ar">${w.arabic}</div>
-    <div class="btns3">
+    <div class="btns3" style="margin-top:14px;">
       <button class="abtn" style="background:rgba(139,58,158,.12);color:var(--acc);border-color:rgba(139,58,158,.35)" onclick="spk('${esc(w.word)}',1)">🔊 استمع</button>
-      <button class="abtn" style="background:rgba(37,211,102,.12);color:#25d366;border-color:rgba(37,211,102,.35)" onclick="shareW('${esc(w.word)}')">📤 شارك</button>
       ${opts.next?`<button class="abtn" style="background:rgba(255,255,255,.06);color:var(--txt);border-color:var(--brd)" onclick="nextWord()">↻ جديدة</button>`:""}
     </div>
+    ${opts.save!==false?`<button class="btn-p" style="margin-top:10px;background:${st.saved.some(s=>s.word===w.word)?"var(--grn)":"var(--acc)"}" onclick="toggleSave('${esc(w.word)}')">${st.saved.some(s=>s.word===w.word)?"✓ محفوظة":"حفظ الكلمة"}</button>`:""}
   </div>
 
   <div class="card">
@@ -374,7 +374,6 @@ function wordHTML(w,opts={}){
     <textarea id="noteInpEl" class="note-ta" style="display:${noteEdit?"block":"none"}">${note}</textarea>
   </div>
 
-  ${opts.save!==false?`<button class="btn-p" style="background:${saved?"var(--grn)":"var(--acc)"}" onclick="toggleSave('${esc(w.word)}')">${saved?"✓ محفوظة":"حفظ الكلمة"}</button>`:""}
   ${opts.del?`<button class="btn-d" onclick="delWord('${esc(w.word)}')">🗑 حذف من المكتبة</button>`:""}
   `;
 }
