@@ -83,7 +83,24 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .gram-no{background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.25);}
 .gram-note{background:var(--surf2);border-radius:10px;padding:10px 12px;
   font-size:12px;color:var(--mut);line-height:1.6;}
-
+  
+/* youglish */
+      var widget;
+      function onYouglishAPIReady(){
+        widget = new YG.Widget("widget-1", {
+          width: 640,
+          components:9, //search box & caption 
+          events: {
+            'onFetchDone': onFetchDone,
+            'onVideoChange': onVideoChange,
+            'onCaptionConsumed': onCaptionConsumed
+          }          
+        });
+        // 4. process the query
+        widget.fetch("courage","english");
+      }
+/* youglish */
+  
 /* Tip */
 .tip-btn{width:100%;background:none;border:1px dashed var(--brd);border-radius:10px;
   color:var(--acc);font-family:'Tajawal',sans-serif;font-size:13px;padding:9px;cursor:pointer;}
@@ -801,22 +818,6 @@ if("serviceWorker" in navigator){
   navigator.serviceWorker.register("/sw.js").catch(()=>{});
 }
 
-//youglish
-      var widget;
-      function onYouglishAPIReady(){
-        widget = new YG.Widget("widget-1", {
-          width: 640,
-          components:9, //search box & caption 
-          events: {
-            'onFetchDone': onFetchDone,
-            'onVideoChange': onVideoChange,
-            'onCaptionConsumed': onCaptionConsumed
-          }          
-        });
-        // 4. process the query
-        widget.fetch("courage","english");
-      }
-//youglish
 </script>
 </body>
 </html>
