@@ -604,7 +604,7 @@ function drawStats(){
     {icon:"🧠",label:"أول اختبار",desc:"أكمل اختباراً",ok:st.quizzes>=1},
     {icon:"🏆",label:"متفوق",desc:"80%+",ok:st.best>=80},
     {icon:"🔥",label:"ثابت",desc:"3 أيام متتالية",ok:st.streak>=3},
-    {icon:"🤖",label:"مستكشف AI",desc:"ولّد 10 كلمات",ok:st.words.length>=10},
+    {icon:"💫",label:"محترف",desc:"20 كلمة",ok:st.saved.length>=20},
     {icon:"🎯",label:"مثالي",desc:"100%",ok:st.best===100},
   ];
   document.getElementById("statsDiv").innerHTML=`
@@ -628,7 +628,11 @@ function drawStats(){
         ${b.ok?`<div style="font-size:10px;color:var(--grn);margin-top:3px;font-weight:700">✓ محقق</div>`:""}
       </div>`).join("")}
     </div>
+  </div>
+  <div style="text-align:center;padding:20px 0 4px;border-top:1px solid var(--brd);margin-top:10px;">
+    <p style="font-size:11px;color:var(--mut);">© ${new Date().getFullYear()} Worldly · Powered by <span style="color:var(--acc);font-weight:700;">RQN</span></p>
   </div>`;
+}
 }
 
 // ── Filter ──────────────────────────────────────────────────────────────────
