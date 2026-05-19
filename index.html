@@ -193,11 +193,11 @@ body.light .fc-back{background:linear-gradient(135deg,#d0f0e0,#c0e8d0);}
 </div>
 
 <div class="tabs">
-  <button class="tab on" onclick="go('home')">🏠</button>
-  <button class="tab" onclick="go('library')">📚</button>
-  <button class="tab" onclick="go('flash')">🔁</button>
-  <button class="tab" onclick="go('quiz')">🧠</button>
-  <button class="tab" onclick="go('stats')">📊</button>
+  <button class="tab on" onclick="go('home')"><div>🏠</div><div style="font-size:10px;margin-top:2px;">اليوم</div></button>
+  <button class="tab" onclick="go('library')"><div>📚</div><div style="font-size:10px;margin-top:2px;">مكتبتي</div></button>
+  <button class="tab" onclick="go('flash')"><div>🔁</div><div style="font-size:10px;margin-top:2px;">مراجعة</div></button>
+  <button class="tab" onclick="go('quiz')"><div>🧠</div><div style="font-size:10px;margin-top:2px;">اختبار</div></button>
+  <button class="tab" onclick="go('stats')"><div>📊</div><div style="font-size:10px;margin-top:2px;">إحصائيات</div></button>
 </div>
 
 <div class="fov" id="fov" style="display:none" onclick="closeFilt()">
@@ -243,6 +243,23 @@ function load(){
   }catch(e){}
 }
 function save(){localStorage.setItem("worldly_pwa",JSON.stringify(st));}
+
+// ── Next Word — cycles through existing words, then generates new ──────────
+function nextWord(){
+  tipOpen=false; gramOpen=false; noteEdit=false;
+  const filtered=st.words.filter(w=>
+    (st.fLevel==="الكل"||w.level===st.fLevel)&&
+    (st.fCat==="الكل"||w.cat===st.fCat)
+  );
+  const nextIdx=filtered.findIndex(w=>w.word===st.words[st.curIdx]?.word);
+  if(filtered.length>1){
+    const next=(nextIdx+1)%filtered.length;
+    st.curIdx=st.words.indexOf(filtered[next]);
+    save(); drawHome();
+  } else {
+    genWord();
+  }
+}
 
 // ── Claude API ─────────────────────────────────────────────────────────────
 async function genWord(){
@@ -308,7 +325,7 @@ function wordHTML(w,opts={}){
     <div class="btns3">
       <button class="abtn" style="background:rgba(139,58,158,.12);color:var(--acc);border-color:rgba(139,58,158,.35)" onclick="spk('${esc(w.word)}',1)">🔊 استمع</button>
       <button class="abtn" style="background:rgba(37,211,102,.12);color:#25d366;border-color:rgba(37,211,102,.35)" onclick="shareW('${esc(w.word)}')">📤 شارك</button>
-      ${opts.next?`<button class="abtn" style="background:rgba(255,255,255,.06);color:var(--txt);border-color:var(--brd)" onclick="genWord()" ${gen?"disabled":""}>↻ جديدة</button>`:""}
+      ${opts.next?`<button class="abtn" style="background:rgba(255,255,255,.06);color:var(--txt);border-color:var(--brd)" onclick="nextWord()">↻ جديدة</button>`:""}
     </div>
   </div>
 
