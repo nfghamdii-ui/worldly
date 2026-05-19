@@ -800,6 +800,23 @@ drawHome();
 if("serviceWorker" in navigator){
   navigator.serviceWorker.register("/sw.js").catch(()=>{});
 }
+
+//youglish
+      var widget;
+      function onYouglishAPIReady(){
+        widget = new YG.Widget("widget-1", {
+          width: 640,
+          components:9, //search box & caption 
+          events: {
+            'onFetchDone': onFetchDone,
+            'onVideoChange': onVideoChange,
+            'onCaptionConsumed': onCaptionConsumed
+          }          
+        });
+        // 4. process the query
+        widget.fetch("courage","english");
+      }
+//youglish
 </script>
 </body>
 </html>
