@@ -421,9 +421,16 @@ function toggleNote(word){
 function drawHome(){
   const d=document.getElementById("homeDiv");
   const hasF=st.fLevel!=="الكل"||st.fCat!=="الكل";
+  let filterLabel="فلترة الكلمات";
+  if(hasF){
+    let parts=[];
+    if(st.fLevel!=="الكل")parts.push(st.fLevel);
+    if(st.fCat!=="الكل")parts.push((CICO[st.fCat]||"")+" "+st.fCat);
+    filterLabel=parts.join(" · ");
+  }
   let h=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
     <button onclick="openFilt()" style="display:flex;align-items:center;gap:6px;background:${hasF?"var(--acc)":"none"};border:1px solid ${hasF?"var(--acc)":"var(--brd)"};border-radius:20px;padding:7px 14px;color:${hasF?"#fff":"var(--mut)"};font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;">
-      🎯 ${hasF?`${st.fLevel!=="الكل"?st.fLevel:""}${st.fLevel!=="الكل"&&st.fCat!=="الكل"?" · ":""}${st.fCat!=="الكل"?(CICO[st.fCat]||"")+" "+st.fCat:""}`.trim():"فلترة الكلمات"}
+      🎯 ${filterLabel}
     </button>
     <span style="font-size:11px;color:var(--mut)">${st.words.length} كلمة</span>
   </div>`;
@@ -634,7 +641,6 @@ function drawStats(){
   <div style="text-align:center;padding:20px 0 4px;border-top:1px solid var(--brd);margin-top:10px;">
     <p style="font-size:11px;color:var(--mut);">© ${new Date().getFullYear()} Worldly · Powered by <span style="color:var(--acc);font-weight:700;">RQN</span></p>
   </div>`;
-}
 }
 
 // ── Filter ──────────────────────────────────────────────────────────────────
