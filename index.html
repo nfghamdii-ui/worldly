@@ -42,7 +42,8 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .tab:not(.on) .tab-label{display:none;}
 .tab-icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 
-.content{padding:calc(70px + var(--safe-top)) 16px calc(80px + var(--safe-bot));overflow-y:auto;height:100vh;}
+.content{padding:calc(70px + var(--safe-top)) 16px calc(80px + var(--safe-bot));overflow-y:auto;height:100vh;scrollbar-width:none;}
+.content::-webkit-scrollbar{display:none;}
 
 .page{display:none;}
 .page.on{display:block;animation:up .3s ease;}
