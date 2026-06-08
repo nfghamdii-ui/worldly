@@ -32,11 +32,14 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 
 .tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;z-index:50;
   background:var(--bg);border-top:1px solid var(--brd);
-  padding:10px 16px calc(10px + var(--safe-bot));display:flex;gap:6px;}
-.tab{flex:1;padding:10px 4px;background:var(--surf);border:1px solid var(--brd);
-  border-radius:10px;color:var(--mut);font-family:'Tajawal',sans-serif;
-  font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;}
-.tab.on{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700;}
+  padding:10px 16px calc(10px + var(--safe-bot));display:flex;gap:4px;align-items:center;justify-content:center;}
+.tab{flex:1;padding:10px 4px;background:none;border:none;
+  border-radius:30px;color:var(--mut);font-family:'Tajawal',sans-serif;
+  font-size:10px;font-weight:500;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.tab.on{background:var(--acc);color:#fff;padding:10px 16px;flex:0 0 auto;}
+.tab.on .tab-label{display:inline;}
+.tab:not(.on) .tab-label{display:none;}
+.tab-icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 
 .content{padding:calc(70px + var(--safe-top)) 16px calc(80px + var(--safe-bot));}
 
@@ -193,11 +196,26 @@ body.light .fc-back{background:linear-gradient(135deg,#d0f0e0,#c0e8d0);}
 </div>
 
 <div class="tabs">
-  <button class="tab on" onclick="go('home')"><div>🏠</div><div style="font-size:10px;margin-top:2px;">اليوم</div></button>
-  <button class="tab" onclick="go('library')"><div>📚</div><div style="font-size:10px;margin-top:2px;">مكتبتي</div></button>
-  <button class="tab" onclick="go('flash')"><div>🔁</div><div style="font-size:10px;margin-top:2px;">مراجعة</div></button>
-  <button class="tab" onclick="go('quiz')"><div>🧠</div><div style="font-size:10px;margin-top:2px;">اختبار</div></button>
-  <button class="tab" onclick="go('stats')"><div>📊</div><div style="font-size:10px;margin-top:2px;">إحصائيات</div></button>
+  <button class="tab on" onclick="go('home')">
+    <svg class="tab-icon" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+    <span class="tab-label">اليوم</span>
+  </button>
+  <button class="tab" onclick="go('library')">
+    <svg class="tab-icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    <span class="tab-label">مكتبتي</span>
+  </button>
+  <button class="tab" onclick="go('flash')">
+    <svg class="tab-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    <span class="tab-label">مراجعة</span>
+  </button>
+  <button class="tab" onclick="go('quiz')">
+    <svg class="tab-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+    <span class="tab-label">اختبار</span>
+  </button>
+  <button class="tab" onclick="go('stats')">
+    <svg class="tab-icon" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+    <span class="tab-label">إحصائيات</span>
+  </button>
 </div>
 
 <div class="fov" id="fov" style="display:none" onclick="closeFilt()">
