@@ -9,12 +9,12 @@
 <meta name="theme-color" content="#8b3a9e"/>
 <link rel="manifest" href="/manifest.json"/>
 <link rel="apple-touch-icon" href="/icon-192.png"/>
-<title>Qulex — كلمة يومية</title>
+<title>Qulex — تعلم الإنجليزية</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
-  --bg:#000000;--surf:#0f0f0f;--surf2:#1a1a1a;--brd:transparent;
+  --bg:#000000;--surf:#0f0f0f;--surf2:#1a1a1a;
   --acc:#8b3a9e;--acc2:#c47abf;--grn:#3ec87a;--red:#e05555;
   --txt:#ebebf5;--mut:#666680;
   --safe-top:env(safe-area-inset-top,0px);
@@ -23,69 +23,97 @@
 body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-height:100vh;overflow-x:hidden;}
 .app{max-width:460px;margin:0 auto;min-height:100vh;}
 
-/* Auth Screen */
-.auth-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
-.auth-logo{font-family:'Playfair Display',serif;font-style:italic;font-size:48px;color:var(--acc);margin-bottom:8px;}
-.auth-sub{font-size:13px;color:var(--mut);margin-bottom:40px;letter-spacing:1px;}
-.auth-box{width:100%;max-width:380px;background:var(--surf);border-radius:20px;padding:28px 24px;}
+/* ── Auth ── */
+.auth-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(ellipse at top,#1a0828 0%,#000 60%);}
+.auth-icon{width:72px;height:72px;background:linear-gradient(135deg,var(--acc),var(--acc2));border-radius:22px;
+  display:flex;align-items:center;justify-content:center;margin-bottom:16px;
+  box-shadow:0 8px 32px rgba(139,58,158,.4);}
+.auth-icon svg{width:38px;height:38px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.auth-logo{font-family:'Playfair Display',serif;font-style:italic;font-size:44px;color:#fff;margin-bottom:6px;line-height:1;}
+.auth-sub{font-size:12px;color:var(--mut);margin-bottom:36px;letter-spacing:1.5px;}
+.auth-box{width:100%;max-width:380px;background:rgba(15,15,15,.9);border-radius:24px;padding:28px 24px;
+  backdrop-filter:blur(20px);}
 .auth-tabs{display:flex;background:var(--surf2);border-radius:12px;padding:4px;margin-bottom:24px;}
 .auth-tab{flex:1;padding:8px;border:none;background:none;border-radius:8px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:600;color:var(--mut);cursor:pointer;transition:all .2s;}
 .auth-tab.on{background:var(--acc);color:#fff;}
-.auth-inp{width:100%;background:var(--surf2);border:none;border-radius:10px;color:var(--txt);font-family:'Tajawal',sans-serif;font-size:14px;padding:12px 14px;outline:none;margin-bottom:12px;direction:ltr;text-align:left;}
+.auth-inp{width:100%;background:var(--surf2);border:none;border-radius:10px;color:var(--txt);font-family:'Tajawal',sans-serif;font-size:14px;padding:13px 14px;outline:none;margin-bottom:10px;direction:ltr;text-align:left;}
 .auth-inp::placeholder{color:var(--mut);direction:rtl;text-align:right;}
-.auth-btn{width:100%;padding:14px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px;}
+.auth-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--acc),#a044b8);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 4px 16px rgba(139,58,158,.3);}
 .auth-err{font-size:12px;color:var(--red);text-align:center;margin-top:10px;min-height:18px;}
 .auth-ok{font-size:12px;color:var(--grn);text-align:center;margin-top:10px;min-height:18px;}
 
+/* ── Header ── */
 .header{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;z-index:50;
-  background:var(--bg);border-bottom:1px solid #1a1a1a;
-  padding:calc(14px + var(--safe-top)) 16px 10px;
+  background:rgba(0,0,0,.85);backdrop-filter:blur(12px);
+  border-bottom:1px solid #1a1a1a;
+  padding:calc(10px + var(--safe-top)) 16px 10px;
   display:flex;align-items:center;justify-content:space-between;
   transition:transform .3s ease;}
 .logo-en{font-family:'Playfair Display',serif;font-style:italic;font-size:22px;color:var(--acc);line-height:1;}
 .logo-sub{font-size:10px;color:var(--mut);letter-spacing:1px;}
+.header-right{display:flex;gap:8px;align-items:center;}
+.streak-badge{display:flex;align-items:center;gap:4px;background:rgba(240,160,48,.12);border-radius:20px;padding:5px 10px;font-size:12px;color:#f0a030;font-weight:700;}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;cursor:pointer;}
 
+/* ── Tabs ── */
 .tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;z-index:50;
-  background:var(--bg);border-top:1px solid #1a1a1a;
+  background:rgba(0,0,0,.9);backdrop-filter:blur(12px);border-top:1px solid #1a1a1a;
   padding:10px 16px calc(10px + var(--safe-bot));display:flex;gap:4px;align-items:center;justify-content:center;}
-.tab{flex:1;padding:10px 4px;background:none;border:none;
-  border-radius:30px;color:var(--mut);font-family:'Tajawal',sans-serif;
-  font-size:10px;font-weight:500;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.tab{flex:1;padding:10px 4px;background:none;border:none;border-radius:30px;color:var(--mut);font-family:'Tajawal',sans-serif;font-size:10px;font-weight:500;cursor:pointer;transition:all .25s;display:flex;flex-direction:column;align-items:center;gap:4px;}
 .tab.on{background:var(--acc);color:#fff;padding:10px 16px;flex:0 0 auto;}
 .tab.on .tab-label{display:inline;}
 .tab:not(.on) .tab-label{display:none;}
 .tab-icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 
-.content{padding:calc(70px + var(--safe-top)) 16px calc(80px + var(--safe-bot));overflow-y:auto;height:100vh;scrollbar-width:none;}
+.content{padding:calc(65px + var(--safe-top)) 16px calc(80px + var(--safe-bot));overflow-y:auto;height:100vh;scrollbar-width:none;}
 .content::-webkit-scrollbar{display:none;}
 
 .page{display:none;}
 .page.on{display:block;animation:up .3s ease;}
 @keyframes up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 @keyframes wordIn{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:scale(1);}}
+@keyframes saveAnim{0%{transform:scale(1);}50%{transform:scale(1.2);}100%{transform:scale(1);}}
 .word-anim{animation:wordIn .4s cubic-bezier(.34,1.1,.64,1);}
+.save-anim{animation:saveAnim .3s ease;}
 
 .card{background:var(--surf);border:none;border-radius:14px;padding:14px;margin-bottom:8px;}
 .lbl{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;text-align:right;}
 
-.hero{background:linear-gradient(160deg,#0a0a0a 0%,#1a0828 60%,#0f0a1a 100%);border:none;
-  border-radius:20px;padding:28px 20px;text-align:center;margin-bottom:8px;
+/* ── Hero ── */
+.hero{background:linear-gradient(160deg,#080808 0%,#1a0828 55%,#0f0a1a 100%);border:none;
+  border-radius:22px;padding:24px 20px 20px;text-align:center;margin-bottom:8px;
   position:relative;overflow:hidden;}
-.hero::before{content:"";position:absolute;top:-50px;right:-50px;width:200px;height:200px;
-  background:radial-gradient(circle,rgba(139,58,158,.2) 0%,transparent 70%);pointer-events:none;}
-.hero::after{content:"";position:absolute;bottom:-30px;left:-30px;width:150px;height:150px;
-  background:radial-gradient(circle,rgba(196,122,191,.1) 0%,transparent 70%);pointer-events:none;}
+.hero::before{content:"";position:absolute;top:-60px;right:-60px;width:240px;height:240px;
+  background:radial-gradient(circle,rgba(139,58,158,.25) 0%,transparent 70%);pointer-events:none;}
+.hero::after{content:"";position:absolute;bottom:-40px;left:-40px;width:180px;height:180px;
+  background:radial-gradient(circle,rgba(196,122,191,.12) 0%,transparent 70%);pointer-events:none;}
 
-.word-big{font-family:'Playfair Display',serif;font-size:56px;font-weight:700;line-height:1;margin-bottom:6px;letter-spacing:-1px;position:relative;z-index:1;}
-.word-ph{direction:ltr;color:var(--mut);font-size:13px;margin-bottom:12px;position:relative;z-index:1;}
-.word-ar{font-size:26px;font-weight:800;color:var(--acc);margin-bottom:14px;position:relative;z-index:1;}
+/* Daily progress bar */
+.daily-bar-wrap{position:relative;z-index:1;margin-bottom:16px;}
+.daily-label{font-size:11px;color:var(--mut);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+.daily-label span:last-child{color:var(--acc2);font-weight:700;}
+.daily-bar{height:4px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;}
+.daily-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:99px;transition:width .5s ease;}
+
+.word-big{font-family:'Playfair Display',serif;font-size:58px;font-weight:700;line-height:1;margin-bottom:6px;letter-spacing:-2px;position:relative;z-index:1;}
+.word-ph{direction:ltr;color:var(--mut);font-size:13px;margin-bottom:10px;position:relative;z-index:1;}
+.word-ar{font-size:26px;font-weight:800;color:var(--acc2);margin-bottom:14px;position:relative;z-index:1;}
 .btns3{display:flex;gap:6px;position:relative;z-index:1;}
-.abtn{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;
+.abtn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;
   border-radius:30px;padding:10px 4px;font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;border:1px solid;}
-.swipe-hint{font-size:11px;color:var(--mut);text-align:center;margin-top:10px;position:relative;z-index:1;opacity:.6;}
 
-.gen-bar{display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:20px;margin-bottom:8px;background:var(--surf);border-radius:14px;}
+/* Save button with star */
+.save-btn{margin-top:10px;position:relative;z-index:1;width:100%;padding:13px;border:none;border-radius:14px;
+  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;}
+.save-btn.unsaved{background:rgba(139,58,158,.15);color:var(--acc2);}
+.save-btn.saved{background:var(--grn);color:#fff;}
+.save-btn svg{width:18px;height:18px;transition:all .2s;}
+
+.swipe-hint{font-size:11px;color:var(--mut);text-align:center;margin-top:10px;position:relative;z-index:1;opacity:.5;}
+
+.gen-bar{display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;margin-bottom:8px;background:var(--surf);border-radius:14px;}
 .dot{width:8px;height:8px;background:var(--acc);border-radius:50%;animation:bounce 1.2s ease-in-out infinite;}
 .dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
 @keyframes bounce{0%,80%,100%{transform:scale(.6);opacity:.4;}40%{transform:scale(1);opacity:1;}}
@@ -105,7 +133,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .gram-note{background:var(--surf2);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--mut);line-height:1.6;}
 
 .tip-btn{width:100%;background:none;border:1px dashed #2a2a2a;border-radius:10px;color:var(--acc);font-family:'Tajawal',sans-serif;font-size:13px;padding:9px;cursor:pointer;}
-.tip-box{margin-top:8px;padding:10px;background:rgba(139,58,158,.08);border-radius:10px;font-size:13px;color:var(--acc);line-height:1.65;}
+.tip-box{margin-top:8px;padding:10px;background:rgba(139,58,158,.08);border-radius:10px;font-size:13px;color:var(--acc2);line-height:1.65;}
 
 .note-ta{width:100%;background:var(--surf2);border:none;border-radius:10px;color:var(--txt);font-family:'Tajawal',sans-serif;font-size:13px;padding:10px 12px;outline:none;resize:none;min-height:80px;direction:rtl;}
 
@@ -144,11 +172,27 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .empty{text-align:center;padding:40px 0;}
 .back{background:none;border:none;color:var(--mut);font-family:'Tajawal',sans-serif;font-size:14px;cursor:pointer;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
 
-body.light{--bg:#f5f5f5;--surf:#ffffff;--surf2:#eeeeee;--txt:#141428;--mut:#7a6a88;--acc:#8b3a9e;--acc2:#c47abf;}
-body.light .hero{background:linear-gradient(160deg,#e8d8f8 0%,#d0b8f0 60%,#e0d0f8 100%);}
-body.light .header{border-bottom:1px solid #e0e0e0;}
-body.light .tabs{border-top:1px solid #e0e0e0;}
-body.light .auth-box{background:#fff;}
+body.light{--bg:#f5f5f5;--surf:#ffffff;--surf2:#eeeeee;--txt:#141428;--mut:#7a6a88;--acc:#8b3a9e;--acc2:#9b4aae;}
+body.light .hero{background:linear-gradient(160deg,#f0e8ff 0%,#e0c8f8 55%,#ece0ff 100%);}
+body.light .header{background:rgba(245,245,245,.9);border-bottom:1px solid #e0e0e0;}
+body.light .tabs{background:rgba(245,245,245,.9);border-top:1px solid #e0e0e0;}
+body.light .auth-screen{background:radial-gradient(ellipse at top,#e8d0f8 0%,#f5f5f5 60%);}
+body.light .auth-box{background:rgba(255,255,255,.95);}
+
+/* ── Grammar Page ── */
+.gram-cat{background:var(--surf);border-radius:14px;margin-bottom:8px;overflow:hidden;}
+.gram-cat-head{width:100%;padding:16px;background:none;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;font-family:'Tajawal',sans-serif;}
+.gram-cat-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-left:12px;flex-shrink:0;}
+.gram-cat-body{padding:0 16px 16px;border-top:1px solid #1a1a1a;}
+.gram-rule-card{background:var(--surf2);border-radius:12px;padding:14px;margin-bottom:8px;}
+.gram-rule-card:last-child{margin-bottom:0;}
+.gram-rule-title{font-size:14px;font-weight:800;color:var(--txt);margin-bottom:6px;}
+.gram-rule-desc{font-size:13px;color:var(--mut);line-height:1.7;margin-bottom:10px;}
+.gram-rule-ex{padding:8px 12px;border-radius:8px;font-size:13px;direction:ltr;text-align:left;margin-bottom:6px;}
+.gram-rule-ok{background:rgba(62,200,122,.1);color:var(--grn);}
+.gram-rule-no{background:rgba(224,85,85,.1);color:var(--red);}
+.gram-rule-tip{font-size:12px;color:var(--acc2);background:rgba(139,58,158,.08);padding:8px 12px;border-radius:8px;margin-top:6px;}
 </style>
 </head>
 <body>
@@ -156,6 +200,9 @@ body.light .auth-box{background:#fff;}
 
 <!-- Auth Screen -->
 <div id="authScreen" class="auth-screen" style="display:none;">
+  <div class="auth-icon">
+    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+  </div>
   <div class="auth-logo">Qulex</div>
   <div class="auth-sub">تعلم الإنجليزية · RQN</div>
   <div class="auth-box">
@@ -170,7 +217,7 @@ body.light .auth-box{background:#fff;}
     </div>
     <button class="auth-btn" id="authBtn" onclick="doAuth()">دخول</button>
     <div id="authMsg" class="auth-err"></div>
-    <button onclick="skipAuth()" style="width:100%;background:none;border:none;color:var(--mut);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;margin-top:14px;padding:8px;">تصفح بدون حساب</button>
+    <button onclick="skipAuth()" style="width:100%;background:none;border:none;color:var(--mut);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;margin-top:16px;padding:8px;">تصفح بدون حساب</button>
   </div>
 </div>
 
@@ -182,9 +229,9 @@ body.light .auth-box{background:#fff;}
     <div class="logo-en">Qulex</div>
     <div class="logo-sub">تعلم الإنجليزية · RQN</div>
   </div>
-  <div style="display:flex;gap:8px;align-items:center;">
-    <button onclick="toggleDark()" id="darkBtn" style="background:none;border:none;border-radius:20px;padding:5px 10px;cursor:pointer;font-size:16px;color:var(--mut);">☀️</button>
-    <div style="background:var(--surf2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--acc);cursor:pointer;" id="savedCnt" onclick="go('stats')">📚 0</div>
+  <div class="header-right">
+    <div class="streak-badge" id="streakBadge">🔥 <span id="streakNum">1</span></div>
+    <div class="user-avatar" id="userAvatar" onclick="go('stats')">؟</div>
   </div>
 </div>
 
@@ -194,6 +241,8 @@ body.light .auth-box{background:#fff;}
   <div class="page" id="p-flash"><div id="flashDiv"></div></div>
   <div class="page" id="p-quiz"><div id="quizDiv"></div></div>
   <div class="page" id="p-stats"><div id="statsDiv"></div></div>
+  <div class="page" id="p-grammar"><div id="grammarDiv"></div></div>
+
 </div>
 
 <div class="tabs">
@@ -213,13 +262,17 @@ body.light .auth-box{background:#fff;}
     <svg class="tab-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
     <span class="tab-label">اختبار</span>
   </button>
+  <button class="tab" onclick="go('grammar')">
+    <svg class="tab-icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+    <span class="tab-label">قواعد</span>
+  </button>
   <button class="tab" onclick="go('stats')">
     <svg class="tab-icon" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
     <span class="tab-label">إحصائيات</span>
   </button>
 </div>
 
-</div><!-- mainApp -->
+</div>
 
 <div class="fov" id="fov" style="display:none" onclick="closeFilt()">
   <div class="fsheet" onclick="event.stopPropagation()">
@@ -241,10 +294,11 @@ const LEVELS=["الكل","مبتدئ","متوسط","متقدم"];
 const CATS=["الكل","شغل","مشاعر","شخصية","تواصل","تقنية","عام"];
 const LCOL={مبتدئ:"#3ec87a",متوسط:"#f0a030",متقدم:"#e05555"};
 const CICO={شغل:"💼",مشاعر:"❤️",شخصية:"🌟",تواصل:"🗣️",تقنية:"💻",عام:"🌐"};
+const DAILY_GOAL=10;
 const SB_URL="https://lqqhzjwqxwafsxkvlyli.supabase.co";
 const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxxcWh6andxeHdhZnN4a3ZseWxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4OTk5MzQsImV4cCI6MjA5NjQ3NTkzNH0.pFWn7BIE2wQH0VfqhySqirNx6QoqRo2OB-RNXmnSQ8s";
 
-let st={words:[],saved:[],notes:{},curIdx:0,dark:true,fLevel:"الكل",fCat:"الكل",best:0,quizzes:0,streak:1,lastVisit:""};
+let st={words:[],saved:[],notes:{},curIdx:0,dark:true,fLevel:"الكل",fCat:"الكل",best:0,quizzes:0,streak:1,lastVisit:"",dailyCount:0,dailyDate:""};
 let gen=false,curtab="home";
 let fcIdx=0,fcFlip=false,fcDone=false;
 let qqs=[],qcur=0,qsc=0,qsel=null,qdone=false;
@@ -269,71 +323,39 @@ async function doAuth(){
   btn.textContent="⏳ جاري...";btn.disabled=true;
   try{
     const ep=authMode==="login"?"/auth/v1/token?grant_type=password":"/auth/v1/signup";
-    const r=await fetch(SB_URL+ep,{
-      method:"POST",
-      headers:{"Content-Type":"application/json","apikey":SB_KEY},
-      body:JSON.stringify({email,password:pass})
-    });
+    const r=await fetch(SB_URL+ep,{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY},body:JSON.stringify({email,password:pass})});
     const d=await r.json();
     if(d.error){msg.className="auth-err";msg.textContent=d.error_description||d.error;}
-    else if(authMode==="register"&&!d.access_token){
-      msg.className="auth-ok";msg.textContent="✅ تم الإنشاء! تحقق من إيميلك ثم سجّل دخول";
-      switchAuth("login");
-    } else {
-      authToken=d.access_token;
-      currentUser=d.user;
-      localStorage.setItem("qulex_token",authToken);
-      localStorage.setItem("qulex_user",JSON.stringify(currentUser));
-      await loadUserSaves();
-      showApp();
-    }
+    else if(authMode==="register"&&!d.access_token){msg.className="auth-ok";msg.textContent="✅ تم الإنشاء! تحقق من إيميلك ثم سجّل دخول";switchAuth("login");}
+    else{authToken=d.access_token;currentUser=d.user;localStorage.setItem("qulex_token",authToken);localStorage.setItem("qulex_user",JSON.stringify(currentUser));await loadUserSaves();showApp();}
   }catch(e){msg.className="auth-err";msg.textContent="خطأ في الاتصال";}
   btn.textContent=authMode==="login"?"دخول":"إنشاء حساب";btn.disabled=false;
 }
 
-function skipAuth(){
-  currentUser=null;authToken=null;
-  showApp();
-}
+function skipAuth(){currentUser=null;authToken=null;showApp();}
 
 async function loadUserSaves(){
   if(!authToken)return;
   try{
-    const r=await fetch(SB_URL+"/rest/v1/user_saves?select=*",{
-      headers:{"apikey":SB_KEY,"Authorization":"Bearer "+authToken}
-    });
+    const r=await fetch(SB_URL+"/rest/v1/user_saves?select=*",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+authToken}});
     const data=await r.json();
-    if(Array.isArray(data)){
-      st.saved=data.map(row=>row.data).filter(Boolean);
-      save();
-    }
+    if(Array.isArray(data)){st.saved=data.map(row=>row.data).filter(Boolean);save();}
   }catch(e){}
 }
 
 async function syncSaveToCloud(word,remove=false){
   if(!authToken||!currentUser)return;
   if(remove){
-    await fetch(SB_URL+`/rest/v1/user_saves?user_id=eq.${currentUser.id}&word=eq.${encodeURIComponent(word)}`,{
-      method:"DELETE",
-      headers:{"apikey":SB_KEY,"Authorization":"Bearer "+authToken}
-    });
+    await fetch(SB_URL+`/rest/v1/user_saves?user_id=eq.${currentUser.id}&word=eq.${encodeURIComponent(word)}`,{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+authToken}});
   } else {
-    const w=st.saved.find(s=>s.word===word);
-    if(!w)return;
-    await fetch(SB_URL+"/rest/v1/user_saves",{
-      method:"POST",
-      headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+authToken,"Prefer":"resolution=merge-duplicates"},
-      body:JSON.stringify({user_id:currentUser.id,word,data:w})
-    });
+    const w=st.saved.find(s=>s.word===word);if(!w)return;
+    await fetch(SB_URL+"/rest/v1/user_saves",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+authToken,"Prefer":"resolution=merge-duplicates"},body:JSON.stringify({user_id:currentUser.id,word,data:w})});
   }
 }
 
 async function doSignOut(){
-  if(authToken){
-    await fetch(SB_URL+"/auth/v1/logout",{method:"POST",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+authToken}}).catch(()=>{});
-  }
-  localStorage.removeItem("qulex_token");
-  localStorage.removeItem("qulex_user");
+  if(authToken){await fetch(SB_URL+"/auth/v1/logout",{method:"POST",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+authToken}}).catch(()=>{});}
+  localStorage.removeItem("qulex_token");localStorage.removeItem("qulex_user");
   currentUser=null;authToken=null;
   document.getElementById("mainApp").style.display="none";
   document.getElementById("authScreen").style.display="flex";
@@ -356,13 +378,29 @@ function load(){
     else if(st.lastVisit===yest)st.streak=(st.streak||0)+1;
     else st.streak=1;
     st.lastVisit=today;
+    // Reset daily count if new day
+    if(st.dailyDate!==today){st.dailyCount=0;st.dailyDate=today;}
   }catch(e){}
 }
 function save(){localStorage.setItem("qulex_pwa",JSON.stringify(st));}
 
+function updHeader(){
+  const el=document.getElementById("streakNum");
+  if(el)el.textContent=st.streak;
+  const av=document.getElementById("userAvatar");
+  if(av){
+    if(currentUser?.email){av.textContent=currentUser.email[0].toUpperCase();av.title=currentUser.email;}
+    else av.textContent="👤";
+  }
+}
+
 // ── Words ─────────────────────────────────────────────────────────────────
 function nextWord(){
   tipOpen=false;gramOpen=false;noteEdit=false;
+  // Count daily words viewed
+  const today=new Date().toDateString();
+  if(st.dailyDate===today)st.dailyCount=Math.min(st.dailyCount+1,DAILY_GOAL);
+  save();
   const filtered=st.words.filter(w=>(st.fLevel==="الكل"||w.level===st.fLevel)&&(st.fCat==="الكل"||w.cat===st.fCat));
   const nextIdx=filtered.findIndex(w=>w.word===st.words[st.curIdx]?.word);
   if(filtered.length>1){const next=(nextIdx+1)%filtered.length;st.curIdx=st.words.indexOf(filtered[next]);save();drawHome();}
@@ -395,8 +433,7 @@ JSON فقط:
 function spk(txt,rate=1){
   if(!window.speechSynthesis)return;
   window.speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(txt);
-  u.lang="en-US";u.rate=rate;
+  const u=new SpeechSynthesisUtterance(txt);u.lang="en-US";u.rate=rate;
   const vs=window.speechSynthesis.getVoices();
   const v=vs.find(v=>v.lang.startsWith("en")&&v.localService)||vs.find(v=>v.lang.startsWith("en"));
   if(v)u.voice=v;
@@ -408,23 +445,41 @@ function wordHTML(w,opts={}){
   const saved=st.saved.some(s=>s.word===w.word);
   const note=st.notes[w.word]||"";
   const lc=LCOL[w.level]||"var(--acc)";
+  const dailyPct=Math.min((st.dailyCount/DAILY_GOAL)*100,100);
+
   return`
   ${opts.back?`<button class="back" onclick="${opts.backFn}()">← رجوع</button>`:""}
   <div class="hero word-anim">
-    <div style="display:flex;justify-content:center;gap:16px;margin-bottom:12px;position:relative;z-index:1;">
-      <span style="font-size:13px;color:${lc};font-weight:700;">${w.level}</span>
-      <span style="font-size:13px;color:var(--acc2);font-weight:700;">${CICO[w.cat]||""} ${w.cat}</span>
+    ${opts.next?`<div class="daily-bar-wrap">
+      <div class="daily-label"><span>كلمات اليوم</span><span>${st.dailyCount}/${DAILY_GOAL}</span></div>
+      <div class="daily-bar"><div class="daily-fill" style="width:${dailyPct}%"></div></div>
+    </div>`:""}
+    <div style="display:flex;justify-content:center;gap:14px;margin-bottom:10px;position:relative;z-index:1;">
+      <span style="font-size:12px;color:${lc};font-weight:700;background:${lc}18;padding:3px 10px;border-radius:20px;">${w.level}</span>
+      <span style="font-size:12px;color:var(--acc2);font-weight:700;background:rgba(196,122,191,.12);padding:3px 10px;border-radius:20px;">${CICO[w.cat]||""} ${w.cat}</span>
     </div>
     <div class="word-big">${w.word}</div>
     <div class="word-ph">${w.phonetic}</div>
     <div class="word-ar">${w.arabic}</div>
-    <div class="btns3" style="margin-top:14px;">
-      <button class="abtn" style="background:rgba(139,58,158,.12);color:var(--acc);border-color:rgba(139,58,158,.3)" onclick="spk('${esc(w.word)}',1)">🔊 استمع</button>
-      ${opts.next?`<button class="abtn" style="background:rgba(255,255,255,.06);color:var(--txt);border-color:rgba(255,255,255,.1)" onclick="nextWord()">↻ جديدة</button>`:""}
+    <div class="btns3" style="margin-top:12px;">
+      <button class="abtn" style="background:rgba(139,58,158,.12);color:var(--acc2);border-color:rgba(139,58,158,.25)" onclick="spk('${esc(w.word)}',1)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+        استمع
+      </button>
+      ${opts.next?`<button class="abtn" style="background:rgba(255,255,255,.05);color:var(--mut);border-color:rgba(255,255,255,.08)" onclick="nextWord()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        جديدة
+      </button>`:""}
     </div>
-    ${opts.save!==false?`<button class="btn-p" style="margin-top:10px;position:relative;z-index:1;background:${saved?"var(--grn)":"var(--acc)"}" onclick="toggleSave('${esc(w.word)}')">${saved?"✓ محفوظة":"حفظ الكلمة"}</button>`:""}
-    ${opts.next?`<p class="swipe-hint">← سويب للتنقل →</p>`:""}
+    ${opts.save!==false?`<button class="save-btn ${saved?"saved":"unsaved"}" id="saveBtnEl" onclick="toggleSave('${esc(w.word)}')">
+      <svg viewBox="0 0 24 24" fill="${saved?"currentColor":"none"}" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+      ${saved?"محفوظة ✓":"حفظ الكلمة"}
+    </button>`:""}
+    ${opts.next?`<p class="swipe-hint">← سويب للتنقل بين الكلمات →</p>`:""}
   </div>
+
   <div class="card"><div class="lbl">📖 التعريف</div><p style="font-size:14px;line-height:1.75">${w.definition}</p></div>
   <div class="card">
     <div class="lbl">💬 أمثلة</div>
@@ -542,8 +597,11 @@ function drawStats(){
   ];
   document.getElementById("statsDiv").innerHTML=`
   ${isLoggedIn?`<div class="card" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-    <div><div style="font-size:13px;font-weight:700">👤 ${userEmail}</div><div style="font-size:11px;color:var(--grn);margin-top:2px">✓ بياناتك محفوظة على السحابة</div></div>
-    <button onclick="doSignOut()" style="background:rgba(224,85,85,.15);color:var(--red);border:none;border-radius:10px;padding:8px 14px;font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;">خروج</button>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:38px;height:38px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;">${userEmail[0]?.toUpperCase()||"Q"}</div>
+      <div><div style="font-size:13px;font-weight:700">${userEmail}</div><div style="font-size:11px;color:var(--grn);margin-top:2px">✓ بياناتك محفوظة على السحابة</div></div>
+    </div>
+    <button onclick="doSignOut()" style="background:rgba(224,85,85,.12);color:var(--red);border:none;border-radius:10px;padding:8px 14px;font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;">خروج</button>
   </div>`:`<div class="card" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
     <div><div style="font-size:13px;font-weight:700">👤 بدون حساب</div><div style="font-size:11px;color:var(--mut);margin-top:2px">البيانات محلية فقط</div></div>
     <button onclick="doSignOut()" style="background:var(--acc);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;">تسجيل دخول</button>
@@ -573,33 +631,34 @@ function go(tab){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("on"));
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("on"));
   document.getElementById("p-"+tab).classList.add("on");
-  const tabs=["home","library","flash","quiz","stats"];
+  const tabs=["home","library","flash","quiz","stats","grammar"];
   document.querySelectorAll(".tab")[tabs.indexOf(tab)]?.classList.add("on");
   document.getElementById("mainContent").scrollTop=0;
   if(tab==="library"){libSel=null;drawLib();}
   if(tab==="flash"){fcIdx=0;fcFlip=false;fcDone=false;drawFlash();}
   if(tab==="quiz")drawQuiz();
   if(tab==="stats")drawStats();
+  if(tab==="grammar")drawGrammar();
 }
 
 function toggleSave(word){
-  const w=st.words.find(x=>x.word===word);
-  if(!w)return;
+  const w=st.words.find(x=>x.word===word);if(!w)return;
   const i=st.saved.findIndex(s=>s.word===word);
   const removing=i>=0;
   if(removing)st.saved.splice(i,1);else st.saved.push(w);
   save();updCnt();
+  // Animate save button
+  const btn=document.getElementById("saveBtnEl");
+  if(btn){btn.classList.add("save-anim");setTimeout(()=>btn.classList.remove("save-anim"),300);}
   syncSaveToCloud(word,removing);
   if(curtab==="home")drawHome();
 }
-function delWord(word){
-  st.saved=st.saved.filter(s=>s.word!==word);
-  save();updCnt();
-  syncSaveToCloud(word,true);
-  libSel=null;drawLib();
+function delWord(word){st.saved=st.saved.filter(s=>s.word!==word);save();updCnt();syncSaveToCloud(word,true);libSel=null;drawLib();}
+function updCnt(){
+  document.getElementById("savedCnt")?document.getElementById("savedCnt").textContent="📚 "+st.saved.length:null;
+  updHeader();
 }
-function updCnt(){document.getElementById("savedCnt").textContent="📚 "+st.saved.length;}
-function toggleDark(){st.dark=!st.dark;save();document.body.classList.toggle("light",!st.dark);document.getElementById("darkBtn").textContent=st.dark?"☀️":"🌙";}
+function toggleDark(){st.dark=!st.dark;save();document.body.classList.toggle("light",!st.dark);}
 
 let lastScroll=0;
 document.getElementById("mainContent").addEventListener("scroll",function(){
@@ -617,6 +676,222 @@ document.getElementById("p-home").addEventListener("touchend",e=>{
   if(Math.abs(dx)>70&&dy<100){if(dx>0)nextWord();else prevWord();}
 },{passive:true});
 
+
+// ── Grammar Data ──────────────────────────────────────────────────────────
+const GRAMMAR_CATS=[
+  {
+    icon:"⏰",color:"#3ec87a",name:"الأزمنة",nameEn:"Tenses",
+    rules:[
+      {
+        title:"المضارع البسيط — Simple Present",
+        desc:"يُستخدم للعادات والحقائق الثابتة. مع he/she/it نضيف s للفعل.",
+        examples:[
+          {text:"She works every day.",ar:"هي تعمل كل يوم.",ok:true},
+          {text:"She work every day.",ar:"",ok:false},
+        ],
+        tip:"💡 تذكر: He/She/It → فعل + s"
+      },
+      {
+        title:"الماضي البسيط — Simple Past",
+        desc:"يُستخدم لحدث اكتمل في الماضي. الأفعال المنتظمة تأخذ -ed.",
+        examples:[
+          {text:"They visited Paris last year.",ar:"زاروا باريس العام الماضي.",ok:true},
+          {text:"They visit Paris last year.",ar:"",ok:false},
+        ],
+        tip:"💡 الأفعال غير المنتظمة: go→went، eat→ate، see→saw"
+      },
+      {
+        title:"المضارع التام — Present Perfect",
+        desc:"يُستخدم لتجربة أو حدث له علاقة بالحاضر. have/has + تصريف ثالث.",
+        examples:[
+          {text:"I have visited Japan twice.",ar:"زرت اليابان مرتين.",ok:true},
+          {text:"I visited Japan twice. (بدون وقت محدد)",ar:"",ok:false},
+        ],
+        tip:"💡 have/has + past participle (eaten, gone, seen)"
+      },
+      {
+        title:"المستقبل — Future with Will",
+        desc:"يُستخدم للقرارات اللحظية والتنبؤات. will + مصدر الفعل.",
+        examples:[
+          {text:"It will rain tomorrow.",ar:"ستمطر غداً.",ok:true},
+          {text:"It will rains tomorrow.",ar:"",ok:false},
+        ],
+        tip:"💡 will لا يتغير مع أي ضمير"
+      },
+    ]
+  },
+  {
+    icon:"🔗",color:"#f0a030",name:"حروف الجر",nameEn:"Prepositions",
+    rules:[
+      {
+        title:"in / on / at — الزمان",
+        desc:"in للأشهر والسنوات والفصول. on للأيام والتواريخ. at للوقت المحدد.",
+        examples:[
+          {text:"I was born in 1995, on Monday, at 3pm.",ar:"وُلدت عام ١٩٩٥، يوم الإثنين، الساعة ٣.",ok:true},
+          {text:"I was born on 1995.",ar:"",ok:false},
+        ],
+        tip:"💡 in السنة، on اليوم، at الساعة"
+      },
+      {
+        title:"in / on / at — المكان",
+        desc:"in للأماكن المغلقة. on للأسطح. at للنقاط المحددة.",
+        examples:[
+          {text:"She is in the room, sitting on the chair, at her desk.",ar:"هي في الغرفة، جالسة على الكرسي، عند مكتبها.",ok:true},
+          {text:"She is at the room.",ar:"",ok:false},
+        ],
+        tip:"💡 in داخل، on فوق السطح، at نقطة محددة"
+      },
+      {
+        title:"for / since — المدة",
+        desc:"for للمدة الزمنية. since لنقطة البداية.",
+        examples:[
+          {text:"I have lived here for 5 years / since 2019.",ar:"عشت هنا لمدة ٥ سنوات / منذ ٢٠١٩.",ok:true},
+          {text:"I have lived here since 5 years.",ar:"",ok:false},
+        ],
+        tip:"💡 for + مدة، since + تاريخ أو حدث"
+      },
+    ]
+  },
+  {
+    icon:"🔄",color:"#e05555",name:"المقارنة",nameEn:"Comparatives",
+    rules:[
+      {
+        title:"المقارنة — Comparative",
+        desc:"الصفات القصيرة + er. الصفات الطويلة: more + صفة.",
+        examples:[
+          {text:"She is taller than her sister. / This is more interesting.",ar:"هي أطول من أختها. / هذا أكثر إثارة.",ok:true},
+          {text:"She is more tall than her sister.",ar:"",ok:false},
+        ],
+        tip:"💡 قصيرة: tall→taller. طويلة: interesting→more interesting"
+      },
+      {
+        title:"التفضيل — Superlative",
+        desc:"الصفات القصيرة + est. الصفات الطويلة: most + صفة.",
+        examples:[
+          {text:"He is the tallest in class. / It is the most beautiful city.",ar:"هو الأطول في الفصل.",ok:true},
+          {text:"He is the most tall in class.",ar:"",ok:false},
+        ],
+        tip:"💡 دائماً مع the: the tallest, the most beautiful"
+      },
+    ]
+  },
+  {
+    icon:"❓",color:"#c47abf",name:"الأسئلة",nameEn:"Questions",
+    rules:[
+      {
+        title:"أسئلة do/does/did",
+        desc:"المضارع البسيط: Do/Does. الماضي: Did. بعدها الفعل بدون تصريف.",
+        examples:[
+          {text:"Does she work here? / Did you see him?",ar:"هل تعمل هنا؟ / هل رأيته؟",ok:true},
+          {text:"Does she works here?",ar:"",ok:false},
+        ],
+        tip:"💡 بعد Does/Did الفعل يرجع لأصله بدون s أو ed"
+      },
+      {
+        title:"أسئلة Wh-",
+        desc:"What/Where/When/Why/Who/How + فعل مساعد + فاعل + فعل.",
+        examples:[
+          {text:"Where do you live? / What did she say?",ar:"أين تسكن؟ / ماذا قالت؟",ok:true},
+          {text:"Where you live?",ar:"",ok:false},
+        ],
+        tip:"💡 لا تنسَ الفعل المساعد do/does/did بعد أداة الاستفهام"
+      },
+    ]
+  },
+  {
+    icon:"📝",color:"#8b3a9e",name:"الأفعال المساعدة",nameEn:"Modal Verbs",
+    rules:[
+      {
+        title:"can / could — القدرة",
+        desc:"can للحاضر. could للماضي أو الطلب المهذب. بعدهما الفعل بدون to.",
+        examples:[
+          {text:"She can swim. / Could you help me?",ar:"هي تستطيع السباحة. / هل يمكنك مساعدتي؟",ok:true},
+          {text:"She can to swim.",ar:"",ok:false},
+        ],
+        tip:"💡 can/could/will/should + فعل بدون to"
+      },
+      {
+        title:"should / must — الوجوب",
+        desc:"should للنصيحة. must للضرورة القوية. بعدهما الفعل بدون to.",
+        examples:[
+          {text:"You should sleep early. / You must wear a seatbelt.",ar:"يجب أن تنام مبكراً. / يجب ارتداء حزام الأمان.",ok:true},
+          {text:"You should to sleep early.",ar:"",ok:false},
+        ],
+        tip:"💡 should نصيحة، must ضرورة"
+      },
+    ]
+  },
+  {
+    icon:"🔤",color:"#3ec87a",name:"الجمع والمفرد",nameEn:"Plural Rules",
+    rules:[
+      {
+        title:"قواعد الجمع الأساسية",
+        desc:"معظم الأسماء: + s. تنتهي بـ s/x/ch/sh: + es. تنتهي بـ y بعد ساكن: y→ies.",
+        examples:[
+          {text:"cat→cats, box→boxes, city→cities",ar:"قطة→قطط، صندوق→صناديق، مدينة→مدن",ok:true},
+          {text:"citys / boxs",ar:"",ok:false},
+        ],
+        tip:"💡 consonant + y = ies: baby→babies, city→cities"
+      },
+      {
+        title:"الجمع الشاذ — Irregular Plurals",
+        desc:"بعض الكلمات لها جمع خاص لا يتبع القاعدة.",
+        examples:[
+          {text:"man→men, woman→women, child→children, tooth→teeth",ar:"رجل→رجال، امرأة→نساء، طفل→أطفال",ok:true},
+          {text:"mans / womans / childs",ar:"",ok:false},
+        ],
+        tip:"💡 احفظها كما هي: person→people, mouse→mice, foot→feet"
+      },
+    ]
+  },
+];
+
+let gramCatOpen = -1;
+
+function drawGrammar(){
+  const d=document.getElementById("grammarDiv");
+  let h=`<h2 style="font-size:18px;font-weight:800;margin-bottom:4px;">القواعد النحوية 📐</h2>
+  <p style="font-size:12px;color:var(--mut);margin-bottom:16px;">تعلم القواعد الأساسية بأمثلة واضحة</p>`;
+
+  GRAMMAR_CATS.forEach((cat,ci)=>{
+    const isOpen=gramCatOpen===ci;
+    h+=`<div class="gram-cat">
+      <button class="gram-cat-head" onclick="toggleGramCat(${ci})">
+        <div style="display:flex;align-items:center;flex:1;">
+          <div class="gram-cat-icon" style="background:${cat.color}18;">${cat.icon}</div>
+          <div style="text-align:right;">
+            <div style="font-size:15px;font-weight:800;color:var(--txt);">${cat.name}</div>
+            <div style="font-size:11px;color:var(--mut);">${cat.nameEn} · ${cat.rules.length} قواعد</div>
+          </div>
+        </div>
+        <span style="color:var(--mut);font-size:12px;margin-right:8px;">${isOpen?"▲":"▼"}</span>
+      </button>
+      ${isOpen?`<div class="gram-cat-body">
+        ${cat.rules.map(rule=>`
+          <div class="gram-rule-card">
+            <div class="gram-rule-title">${rule.title}</div>
+            <div class="gram-rule-desc">${rule.desc}</div>
+            ${rule.examples.map(ex=>`
+              <div class="gram-rule-ex ${ex.ok?"gram-rule-ok":"gram-rule-no"}">
+                ${ex.ok?"✅":"❌"} ${ex.text}
+                ${ex.ar?`<div style="font-size:11px;opacity:.7;direction:rtl;text-align:right;margin-top:2px;">${ex.ar}</div>`:""}
+              </div>
+            `).join("")}
+            <div class="gram-rule-tip">${rule.tip}</div>
+          </div>
+        `).join("")}
+      </div>`:""}
+    </div>`;
+  });
+
+  d.innerHTML=h;
+}
+
+function toggleGramCat(idx){
+  gramCatOpen=gramCatOpen===idx?-1:idx;
+  drawGrammar();
+}
+
 async function fetchWords(){
   try{
     const r=await fetch(SB_URL+"/rest/v1/words?select=*&limit=500",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
@@ -632,7 +907,6 @@ async function fetchWords(){
 function initApp(){
   load();
   if(!st.dark)document.body.classList.add("light");
-  document.getElementById("darkBtn").textContent=st.dark?"☀️":"🌙";
   updCnt();
   window.speechSynthesis?.getVoices();
   window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
@@ -642,18 +916,14 @@ function initApp(){
   if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}
 }
 
-// ── Startup ───────────────────────────────────────────────────────────────
 load();
 if(!st.dark)document.body.classList.add("light");
 
-// Check saved session
 const savedToken=localStorage.getItem("qulex_token");
 const savedUser=localStorage.getItem("qulex_user");
 if(savedToken&&savedUser){
   try{
-    authToken=savedToken;
-    currentUser=JSON.parse(savedUser);
-    // Verify token still valid
+    authToken=savedToken;currentUser=JSON.parse(savedUser);
     fetch(SB_URL+"/auth/v1/user",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+authToken}})
       .then(r=>r.json())
       .then(async d=>{
