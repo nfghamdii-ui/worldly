@@ -202,6 +202,8 @@ const CICO={شغل:"💼",مشاعر:"❤️",شخصية:"🌟",تواصل:"🗣
 const DAILY_GOAL=10;
 const SB_URL="https://lqqhzjwqxwafsxkvlyli.supabase.co";
 const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxxcWh6andxeHdhZnN4a3ZseWxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4OTk5MzQsImV4cCI6MjA5NjQ3NTkzNH0.pFWn7BIE2wQH0VfqhySqirNx6QoqRo2OB-RNXmnSQ8s";
+const EL_KEY="sk_b8efa05e522f4638748a9d48e60cf771e80dd671594d6a78";
+const EL_VOICE="EXAVITQu4vr4xnSDxMaL";
 let st={words:[],saved:[],notes:{},curIdx:0,dark:true,fLevel:"الكل",fCat:"الكل",best:0,quizzes:0,streak:1,lastVisit:"",dailyCount:0,dailyDate:""};
 let gen=false,curtab="home",fcIdx=0,fcFlip=false,fcDone=false;
 let qqs=[],qcur=0,qsc=0,qsel=null,qdone=false;
@@ -240,28 +242,38 @@ function updHeader(){const el=document.getElementById("streakNum");if(el)el.text
 function nextWord(){tipOpen=false;gramOpen=false;noteEdit=false;const today=new Date().toDateString();if(st.dailyDate===today)st.dailyCount=Math.min(st.dailyCount+1,DAILY_GOAL);save();const filtered=st.words.filter(w=>(st.fLevel==="الكل"||w.level===st.fLevel)&&(st.fCat==="الكل"||w.cat===st.fCat));const nextIdx=filtered.findIndex(w=>w.word===st.words[st.curIdx]?.word);if(filtered.length>1){const next=(nextIdx+1)%filtered.length;st.curIdx=st.words.indexOf(filtered[next]);save();drawHome();}else genWord();}
 function prevWord(){tipOpen=false;gramOpen=false;noteEdit=false;if(st.curIdx>0){st.curIdx--;save();drawHome();}}
 async function genWord(){if(gen)return;gen=true;tipOpen=false;gramOpen=false;noteEdit=false;drawHome();const used=st.words.slice(-20).map(w=>w.word).join(",");const lvl=st.fLevel==="الكل"?["مبتدئ","متوسط","متقدم"][Math.floor(Math.random()*3)]:st.fLevel;const cat=st.fCat==="الكل"?"عام":st.fCat;const prompt=`علّم العرب إنجليزي. اختر كلمة ${lvl==="مبتدئ"?"سهلة":lvl==="متقدم"?"متقدمة":"متوسطة"} عن "${cat}". لا تكرر: ${used||"لا"}.\nJSON فقط:\n{"word":"","phonetic":"","type":"اسم/فعل/صفة","arabic":"","level":"${lvl}","cat":"${cat}","definition":"جملة","examples":[{"en":"","ar":""},{"en":"","ar":""},{"en":"","ar":""}],"tip":"","grammar":{"rule":"","explanation":"جملتان","correct":"","wrong":"","tip":""}}`;try{const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:800,messages:[{role:"user",content:prompt}]})});const d=await r.json();const t=(d.content||[]).find(b=>b.type==="text")?.text||"";const w=JSON.parse(t.replace(/```json|```/g,"").trim());st.words.push(w);st.curIdx=st.words.length-1;save();}catch(e){document.getElementById("homeDiv").innerHTML+=`<p style="color:var(--red);text-align:center;font-size:12px;margin-top:8px;">تعذّر التوليد</p>`;}gen=false;drawHome();updCnt();}
-function spk(txt,rate=1){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.lang="en-US";u.rate=rate;const vs=window.speechSynthesis.getVoices();const v=vs.find(v=>v.lang.startsWith("en")&&v.localService)||vs.find(v=>v.lang.startsWith("en"));if(v)u.voice=v;window.speechSynthesis.speak(u);}
+async function spk(txt,rate=1){
+  const btn=event?.currentTarget;
+  if(btn){btn.textContent="⏳";btn.disabled=true;}
+  try{
+    const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+EL_VOICE,{
+      method:"POST",
+      headers:{"Content-Type":"application/json","xi-api-key":EL_KEY},
+      body:JSON.stringify({text:txt,model_id:"eleven_multilingual_v2",voice_settings:{stability:0.5,similarity_boost:0.75}})
+    });
+    if(!r.ok)throw new Error("EL failed");
+    const blob=await r.blob();
+    const url=URL.createObjectURL(blob);
+    const audio=new Audio(url);
+    audio.playbackRate=rate;
+    audio.play();
+    audio.onended=()=>URL.revokeObjectURL(url);
+  }catch(e){
+    if(window.speechSynthesis){
+      window.speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(txt);
+      u.lang="en-US";u.rate=rate;
+      const vs=window.speechSynthesis.getVoices();
+      const v=vs.find(v=>v.lang.startsWith("en")&&v.localService)||vs.find(v=>v.lang.startsWith("en"));
+      if(v)u.voice=v;
+      window.speechSynthesis.speak(u);
+    }
+  }
+  if(btn){btn.textContent="🔊 استمع";btn.disabled=false;}
+}
 function esc(s){return(s||"").replace(/'/g,"\\'").replace(/"/g,'\\"');}
 
-// Cambridge Dictionary iframe toggle
-function toggleCambridge(word){
-  const frame=document.getElementById("cbFrameEl");
-  const btn=document.getElementById("cbBtnEl");
-  if(!frame||!btn)return;
-  if(frame.style.display==="none"||!frame.style.display){
-    frame.style.display="block";
-    const iframe=document.getElementById("cbIframeEl");
-    if(iframe&&!iframe.src){
-      iframe.src="https://dictionary.cambridge.org/dictionary/english/"+encodeURIComponent(word);
-    }
-    btn.textContent="✕ إغلاق القاموس";
-    btn.style.background="rgba(62,200,122,.2)";
-  }else{
-    frame.style.display="none";
-    btn.textContent="📖 Cambridge Dictionary";
-    btn.style.background="";
-  }
-}
+
 
 function wordHTML(w,opts={}){
   if(!w)return"";
@@ -289,13 +301,7 @@ function wordHTML(w,opts={}){
   </div>
   <div class="card"><div class="lbl">📖 التعريف</div><p style="font-size:14px;line-height:1.75">${w.definition}</p></div>
   <div class="card"><div class="lbl">💬 أمثلة</div>${w.examples.map(ex=>`<div class="ex-block"><div class="ex-row"><p class="ex-en">"${ex.en}"</p><button class="spk-sm" onclick="spk('${esc(ex.en)}',.85)">🔊</button></div><p class="ex-ar">${ex.ar}</p></div>`).join("")}</div>
-  <div class="card">
-    <div class="lbl" style="margin-bottom:10px;">📖 النطق والتعريف</div>
-    <button class="cb-btn" id="cbBtnEl" onclick="toggleCambridge('${esc(w.word)}')">📖 Cambridge Dictionary</button>
-    <div id="cbFrameEl" style="display:none;" class="cb-frame">
-      <iframe id="cbIframeEl" width="100%" height="400" frameborder="0" style="display:block;border:none;"></iframe>
-    </div>
-  </div>
+
   ${w.grammar?`<div class="card" style="padding:0;overflow:hidden;"><button class="gram-head" onclick="toggleGram()"><span class="lbl" style="margin:0">📐 القاعدة النحوية</span><span style="font-size:13px;color:var(--acc2);font-weight:700;display:flex;align-items:center;gap:6px">${w.grammar.rule} <span id="garrw" style="font-size:10px;color:var(--mut)">▼</span></span></button><div class="gram-body" id="gramBody" style="display:none"><p style="font-size:13px;line-height:1.75;margin-bottom:14px;margin-top:12px">${w.grammar.explanation}</p><div class="gram-ex gram-ok"><span>✅</span><span style="color:var(--txt)">${w.grammar.correct}</span></div><div class="gram-ex gram-no"><span>❌</span><span style="color:var(--txt)">${w.grammar.wrong}</span></div><div class="gram-note" style="margin-top:10px">💡 ${w.grammar.tip}</div></div></div>`:""}
   <div class="card"><button class="tip-btn" id="tipBtnEl" onclick="toggleTip()">${tipOpen?"💡 إخفاء النصيحة":"💡 نصيحة لتذكر الكلمة"}</button><div class="tip-box" id="tipBoxEl" style="display:${tipOpen?"block":"none"}">${w.tip}</div></div>
   <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="lbl" style="margin:0">📝 ملاحظتي</span><button onclick="toggleNote('${esc(w.word)}')" style="background:none;border:none;color:var(--acc);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer" id="noteBtnEl">${noteEdit?"حفظ ✓":"تعديل ✏️"}</button></div><div id="noteDispEl" style="font-size:13px;color:${note?"var(--txt)":"var(--mut)"};line-height:1.6;min-height:30px;display:${noteEdit?"none":"block"}">${note||"لا توجد ملاحظة — اضغط تعديل"}</div><textarea id="noteInpEl" class="note-ta" style="display:${noteEdit?"block":"none"}">${note}</textarea></div>
