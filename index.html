@@ -205,6 +205,7 @@ const DAILY_GOAL=10;
 const SB_URL="https://lqqhzjwqxwafsxkvlyli.supabase.co";
 const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxxcWh6andxeHdhZnN4a3ZseWxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4OTk5MzQsImV4cCI6MjA5NjQ3NTkzNH0.pFWn7BIE2wQH0VfqhySqirNx6QoqRo2OB-RNXmnSQ8s";
 const EL_KEY="sk_b8efa05e522f4638748a9d48e60cf771e80dd671594d6a78";
+const YT_KEY="AIzaSyCP5k_uoUQZ58kOW2pfP9a1CEakgEyXfVE";
 const EL_VOICE="EXAVITQu4vr4xnSDxMaL";
 let st={words:[],saved:[],notes:{},curIdx:0,dark:true,fLevel:"الكل",fCat:"الكل",best:0,quizzes:0,streak:1,lastVisit:"",dailyCount:0,dailyDate:""};
 let gen=false,curtab="home",fcIdx=0,fcFlip=false,fcDone=false;
@@ -307,7 +308,7 @@ function wordHTML(w,opts={}){
     <div class="lbl" style="margin-bottom:10px;">🎬 شوف الكلمة في جملة حقيقية</div>
     <button class="yt-btn" id="ytBtnEl" onclick="toggleYT('${esc(w.word)}')">▶ شغّل مقطع يوتيوب</button>
     <div id="ytFrameEl" style="display:none;" class="yt-frame">
-      <div id="ytIframeEl"></div>
+      <div id="ytIframeEl" style="min-height:60px;"></div>
     </div>
   </div>
   ${w.grammar?`<div class="card" style="padding:0;overflow:hidden;"><button class="gram-head" onclick="toggleGram()"><span class="lbl" style="margin:0">📐 القاعدة النحوية</span><span style="font-size:13px;color:var(--acc2);font-weight:700;display:flex;align-items:center;gap:6px">${w.grammar.rule} <span id="garrw" style="font-size:10px;color:var(--mut)">▼</span></span></button><div class="gram-body" id="gramBody" style="display:none"><p style="font-size:13px;line-height:1.75;margin-bottom:14px;margin-top:12px">${w.grammar.explanation}</p><div class="gram-ex gram-ok"><span>✅</span><span style="color:var(--txt)">${w.grammar.correct}</span></div><div class="gram-ex gram-no"><span>❌</span><span style="color:var(--txt)">${w.grammar.wrong}</span></div><div class="gram-note" style="margin-top:10px">💡 ${w.grammar.tip}</div></div></div>`:""}
@@ -353,7 +354,7 @@ const GRAMMAR_CATS=[{icon:"⏰",color:"#3ec87a",name:"الأزمنة",nameEn:"Te
 let gramCatOpen=-1;
 function drawGrammar(){const d=document.getElementById("grammarDiv");let h=`<h2 style="font-size:18px;font-weight:800;margin-bottom:4px;">القواعد النحوية 📐</h2><p style="font-size:12px;color:var(--mut);margin-bottom:16px;">تعلم القواعد الأساسية بأمثلة واضحة</p>`;GRAMMAR_CATS.forEach((cat,ci)=>{const isOpen=gramCatOpen===ci;h+=`<div class="gram-cat"><button class="gram-cat-head" onclick="toggleGramCat(${ci})"><div style="display:flex;align-items:center;flex:1;"><div class="gram-cat-icon" style="background:${cat.color}18;">${cat.icon}</div><div style="text-align:right;"><div style="font-size:15px;font-weight:800;color:var(--txt);">${cat.name}</div><div style="font-size:11px;color:var(--mut);">${cat.nameEn} · ${cat.rules.length} قواعد</div></div></div><span style="color:var(--mut);font-size:12px;margin-right:8px;">${isOpen?"▲":"▼"}</span></button>${isOpen?`<div class="gram-cat-body">${cat.rules.map(rule=>`<div class="gram-rule-card"><div class="gram-rule-title">${rule.title}</div><div class="gram-rule-desc">${rule.desc}</div>${rule.examples.map(ex=>`<div class="gram-rule-ex ${ex.ok?"gram-rule-ok":"gram-rule-no"}">${ex.ok?"✅":"❌"} ${ex.text}${ex.ar?`<div style="font-size:11px;opacity:.7;direction:rtl;text-align:right;margin-top:2px;">${ex.ar}</div>`:""}</div>`).join("")}<div class="gram-rule-tip">${rule.tip}</div></div>`).join("")}</div>`:""}</div>`;});d.innerHTML=h;}
 function toggleGramCat(idx){gramCatOpen=gramCatOpen===idx?-1:idx;drawGrammar();}
-function toggleYT(word){
+async function toggleYT(word){
   const frame=document.getElementById("ytFrameEl");
   const btn=document.getElementById("ytBtnEl");
   if(!frame||!btn)return;
@@ -362,22 +363,27 @@ function toggleYT(word){
     const div=document.getElementById("ytIframeEl");
     if(div&&!div.dataset.loaded){
       div.dataset.loaded="1";
-      // Use YouTube search page via google search for pronunciation
-      const q=encodeURIComponent("how to pronounce "+word+" in english");
-      div.innerHTML=`<div style="padding:14px;text-align:center;">
-        <p style="font-size:13px;color:var(--mut);margin-bottom:12px;">اختار مقطع من يوتيوب</p>
-        <a href="https://www.youtube.com/results?search_query=how+to+pronounce+${encodeURIComponent(word)}" 
-           target="_blank"
-           style="display:inline-block;padding:12px 20px;background:#ff0000;color:#fff;border-radius:12px;text-decoration:none;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;">
-          ▶ افتح يوتيوب
-        </a>
-        <p style="font-size:11px;color:var(--mut);margin-top:10px;">سيفتح في تاب جديد</p>
-      </div>`;
+      div.innerHTML=`<div style="padding:20px;text-align:center;"><div class="dot" style="display:inline-block"></div> <span style="font-size:13px;color:var(--mut)">جاري البحث...</span></div>`;
+      try{
+        const q=encodeURIComponent("how to pronounce "+word+" pronunciation");
+        const r=await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&maxResults=1&key=${YT_KEY}`);
+        const d=await r.json();
+        const vid=d.items?.[0]?.id?.videoId;
+        if(vid){
+          div.innerHTML=`<iframe width="100%" height="220" src="https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0" frameborder="0" allow="autoplay;encrypted-media" allowfullscreen style="display:block;border:none;border-radius:12px;"></iframe>`;
+        }else{
+          div.innerHTML=`<p style="text-align:center;color:var(--mut);padding:20px;font-size:13px;">لم يتم العثور على مقطع</p>`;
+        }
+      }catch(e){
+        div.innerHTML=`<p style="text-align:center;color:var(--red);padding:20px;font-size:13px;">تعذّر التحميل</p>`;
+      }
     }
-    btn.textContent="✕ إغلاق";
+    btn.textContent="✕ إغلاق المقطع";
     btn.style.background="rgba(255,50,50,.2)";
   }else{
     frame.style.display="none";
+    const div=document.getElementById("ytIframeEl");
+    if(div){div.innerHTML="";div.dataset.loaded="";}
     btn.textContent="▶ شغّل مقطع يوتيوب";
     btn.style.background="";
   }
