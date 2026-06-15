@@ -307,7 +307,7 @@ function wordHTML(w,opts={}){
     <div class="lbl" style="margin-bottom:10px;">🎬 شوف الكلمة في جملة حقيقية</div>
     <button class="yt-btn" id="ytBtnEl" onclick="toggleYT('${esc(w.word)}')">▶ شغّل مقطع يوتيوب</button>
     <div id="ytFrameEl" style="display:none;" class="yt-frame">
-      <iframe id="ytIframeEl" width="100%" height="220" frameborder="0" allow="autoplay;encrypted-media" allowfullscreen style="display:block;border:none;border-radius:12px;"></iframe>
+      <div id="ytIframeEl"></div>
     </div>
   </div>
   ${w.grammar?`<div class="card" style="padding:0;overflow:hidden;"><button class="gram-head" onclick="toggleGram()"><span class="lbl" style="margin:0">📐 القاعدة النحوية</span><span style="font-size:13px;color:var(--acc2);font-weight:700;display:flex;align-items:center;gap:6px">${w.grammar.rule} <span id="garrw" style="font-size:10px;color:var(--mut)">▼</span></span></button><div class="gram-body" id="gramBody" style="display:none"><p style="font-size:13px;line-height:1.75;margin-bottom:14px;margin-top:12px">${w.grammar.explanation}</p><div class="gram-ex gram-ok"><span>✅</span><span style="color:var(--txt)">${w.grammar.correct}</span></div><div class="gram-ex gram-no"><span>❌</span><span style="color:var(--txt)">${w.grammar.wrong}</span></div><div class="gram-note" style="margin-top:10px">💡 ${w.grammar.tip}</div></div></div>`:""}
@@ -359,16 +359,25 @@ function toggleYT(word){
   if(!frame||!btn)return;
   if(frame.style.display==="none"||!frame.style.display){
     frame.style.display="block";
-    const iframe=document.getElementById("ytIframeEl");
-    if(iframe&&!iframe.src){
-      iframe.src="https://www.youtube.com/embed?listType=search&list=how+to+pronounce+"+encodeURIComponent(word)+"&autoplay=1";
+    const div=document.getElementById("ytIframeEl");
+    if(div&&!div.dataset.loaded){
+      div.dataset.loaded="1";
+      // Use YouTube search page via google search for pronunciation
+      const q=encodeURIComponent("how to pronounce "+word+" in english");
+      div.innerHTML=`<div style="padding:14px;text-align:center;">
+        <p style="font-size:13px;color:var(--mut);margin-bottom:12px;">اختار مقطع من يوتيوب</p>
+        <a href="https://www.youtube.com/results?search_query=how+to+pronounce+${encodeURIComponent(word)}" 
+           target="_blank"
+           style="display:inline-block;padding:12px 20px;background:#ff0000;color:#fff;border-radius:12px;text-decoration:none;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;">
+          ▶ افتح يوتيوب
+        </a>
+        <p style="font-size:11px;color:var(--mut);margin-top:10px;">سيفتح في تاب جديد</p>
+      </div>`;
     }
-    btn.textContent="✕ إغلاق المقطع";
+    btn.textContent="✕ إغلاق";
     btn.style.background="rgba(255,50,50,.2)";
   }else{
     frame.style.display="none";
-    const iframe=document.getElementById("ytIframeEl");
-    if(iframe)iframe.src="";
     btn.textContent="▶ شغّل مقطع يوتيوب";
     btn.style.background="";
   }
