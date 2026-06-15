@@ -361,8 +361,9 @@ async function loadYTVideos(word){
   div.innerHTML=`<div style="padding:20px;text-align:center;"><span style="font-size:13px;color:var(--mut)">⏳ جاري البحث...</span></div>`;
   try{
     // Search for short pronunciation videos (videoDuration=short = under 4 min)
-    const q=encodeURIComponent("pronounce "+word+" english");
-    const r=await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&maxResults=5&videoDuration=short&key=${YT_KEY}`);
+    // Search for real videos where the word is naturally spoken (with captions)
+    const q=encodeURIComponent('"'+word+'" english speaking');
+    const r=await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&maxResults=5&videoCaption=closedCaption&relevanceLanguage=en&key=${YT_KEY}`);
     const d=await r.json();
     ytVideos=(d.items||[]).map(i=>i.id.videoId).filter(Boolean);
     if(ytVideos.length>0){showYTVideo();}
