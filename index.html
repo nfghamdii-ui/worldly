@@ -521,23 +521,33 @@ async function fetchTotalCount(){
   }catch(e){}
 }
 // جلب كلمة عشوائية واحدة من Supabase
-async function fetchRandomWord(excludeWords=[]){
+async function fetchRandomWord(){
   try{
     const lvlF=st.fLevel!=="الكل"?`&level=eq.${encodeURIComponent(st.fLevel)}`:"";
     const catF=st.fCat!=="الكل"?`&cat=eq.${encodeURIComponent(st.fCat)}`:"";
-    // جلب عدد الكلمات
+    // جلب العدد الكلي
     const countR=await fetch(SB_URL+"/rest/v1/words?select=id"+lvlF+catF,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"count=exact","Range":"0-0"}});
     const cnt=countR.headers.get("content-range");
     const total=cnt?parseInt(cnt.split("/")[1]):0;
     if(!total)return null;
-    // اختر offset عشوائي
-    const offset=Math.floor(Math.random()*total);
-    const r=await fetch(SB_URL+"/rest/v1/words?select=*"+lvlF+catF+`&offset=${offset}&limit=1`,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
-    const data=await r.json();
-    if(data&&data.length>0){
-      totalWordsCount=total;
-      return data[0];
+    totalWordsCount=total;
+    // تجنب تكرار آخر 5 كلمات
+    const recentWords=st.words.slice(-5).map(w=>w.word.toLowerCase());
+    let word=null;
+    let tries=0;
+    while(tries<5){
+      const offset=Math.floor(Math.random()*total);
+      const r=await fetch(SB_URL+"/rest/v1/words?select=*"+lvlF+catF+`&offset=${offset}&limit=1`,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+      const data=await r.json();
+      if(data&&data.length>0){
+        if(!recentWords.includes(data[0].word.toLowerCase())){
+          word=data[0];
+          break;
+        }
+      }
+      tries++;
     }
+    return word;
   }catch(e){}
   return null;
 }
