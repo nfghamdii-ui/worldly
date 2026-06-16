@@ -108,6 +108,13 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .qopt{display:block;width:100%;margin-bottom:8px;padding:13px 14px;background:var(--surf);border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:14px;color:var(--txt);cursor:pointer;text-align:right;}
 .qopt.ok{background:rgba(62,200,122,.15);color:var(--grn);}
 .qopt.no{background:rgba(224,85,85,.15);color:var(--red);}
+.wq-inp{width:100%;background:var(--surf2);border:2px solid #2a2a2a;border-radius:12px;color:var(--txt);font-family:'Playfair Display',serif;font-size:28px;padding:16px;outline:none;text-align:center;direction:ltr;transition:border-color .2s;}
+.wq-inp:focus{border-color:var(--acc);}
+.wq-inp.ok{border-color:var(--grn);background:rgba(62,200,122,.08);}
+.wq-inp.no{border-color:var(--red);background:rgba(224,85,85,.08);}
+.quiz-mode-tabs{display:flex;background:var(--surf2);border-radius:12px;padding:4px;margin-bottom:16px;gap:4px;}
+.quiz-mode-tab{flex:1;padding:8px;border:none;background:none;border-radius:8px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;color:var(--mut);cursor:pointer;transition:all .2s;}
+.quiz-mode-tab.on{background:var(--acc);color:#fff;}
 .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
 .scard{background:var(--surf);border:none;border-radius:14px;padding:14px;text-align:center;}
 .bgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
@@ -210,6 +217,8 @@ const EL_VOICE="EXAVITQu4vr4xnSDxMaL";
 let st={words:[],saved:[],notes:{},curIdx:0,dark:true,fLevel:"الكل",fCat:"الكل",best:0,quizzes:0,streak:1,lastVisit:"",dailyCount:0,dailyDate:""};
 let gen=false,curtab="home",fcIdx=0,fcFlip=false,fcDone=false;
 let qqs=[],qcur=0,qsc=0,qsel=null,qdone=false;
+let quizMode="choice";
+let wqWord=null,wqDone=false,wqSc=0,wqTotal=0,wqList=[];
 let libSel=null,tipOpen=false,gramOpen=false,noteEdit=false;
 let currentUser=null,authToken=null,authMode="login";
 
@@ -330,7 +339,100 @@ function nextFC(){if(fcIdx+1>=st.saved.length)fcDone=true;else{fcIdx++;fcFlip=fa
 function prevFC(){if(fcIdx>0){fcIdx--;fcFlip=false;drawFlash();}}
 function resetFlash(){fcIdx=0;fcFlip=false;fcDone=false;drawFlash();}
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
-function drawQuiz(){const d=document.getElementById("quizDiv");if(st.saved.length<3){d.innerHTML=`<div class="empty"><div style="font-size:44px">📚</div><p style="font-weight:700;margin-top:8px">تحتاج 3 كلمات على الأقل</p></div>`;return;}if(!qqs.length){d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px"><span style="font-size:56px">🧠</span><h2 style="font-size:20px;font-weight:800">اختبر معلوماتك</h2><p style="font-size:13px;color:var(--mut)">سيتم اختبارك على ${st.saved.length} كلمة</p><button onclick="startQuiz()" style="padding:13px 40px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">ابدأ الاختبار</button></div>`;return;}if(qdone){const pct=Math.round((qsc/qqs.length)*100);d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px"><div class="sring"><span style="font-size:28px;font-weight:800;color:var(--acc)">${pct}%</span></div><h2 style="font-size:20px;font-weight:800">${pct>=80?"ممتاز! 🎉":pct>=50?"جيد 👍":"استمر 💪"}</h2><p style="font-size:13px;color:var(--mut)">${qsc} من ${qqs.length} إجابة صحيحة</p><div style="display:flex;gap:10px"><button onclick="startQuiz()" style="padding:13px 28px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer">أعد الاختبار</button><button onclick="resetQuiz()" class="btn-s" style="padding:13px 24px">رجوع</button></div></div>`;return;}const q=qqs[qcur];let h=`<div class="prog"><div class="pfill" style="width:${(qcur/qqs.length)*100}%"></div></div><p style="font-size:11px;color:var(--mut);text-align:center;margin-bottom:12px">${qcur+1} من ${qqs.length}</p><div class="card" style="font-size:16px;font-weight:600;line-height:1.65;text-align:center;margin-bottom:12px">${q.question}</div>`;q.options.forEach((opt,i)=>{let cls="qopt";if(qsel!==null){if(i===q.correct)cls+=" ok";else if(i===qsel)cls+=" no";}h+=`<button class="${cls}" ${qsel!==null?"disabled":""} onclick="ansQ(${i})">${opt}</button>`;});d.innerHTML=h;}
+function drawQuiz(){
+  const d=document.getElementById("quizDiv");
+  if(st.saved.length<3){d.innerHTML=`<div class="empty"><div style="font-size:44px">📚</div><p style="font-weight:700;margin-top:8px">تحتاج 3 كلمات على الأقل</p></div>`;return;}
+  if(quizMode==="writing"){drawWritingQuiz();return;}
+  if(!qqs.length){
+    d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px">
+      <div class="quiz-mode-tabs" style="width:100%;max-width:280px;">
+        <button class="quiz-mode-tab on" onclick="setQuizMode('choice')">🔤 اختيار</button>
+        <button class="quiz-mode-tab" onclick="setQuizMode('writing')">✍️ كتابة</button>
+      </div>
+      <span style="font-size:56px">🧠</span>
+      <h2 style="font-size:20px;font-weight:800">اختبر معلوماتك</h2>
+      <p style="font-size:13px;color:var(--mut)">سيتم اختبارك على ${st.saved.length} كلمة</p>
+      <button onclick="startQuiz()" style="padding:13px 40px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">ابدأ الاختبار</button></div>`;
+    return;
+  }
+  if(qdone){const pct=Math.round((qsc/qqs.length)*100);d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px"><div class="sring"><span style="font-size:28px;font-weight:800;color:var(--acc)">${pct}%</span></div><h2 style="font-size:20px;font-weight:800">${pct>=80?"ممتاز! 🎉":pct>=50?"جيد 👍":"استمر 💪"}</h2><p style="font-size:13px;color:var(--mut)">${qsc} من ${qqs.length} إجابة صحيحة</p><div style="display:flex;gap:10px"><button onclick="startQuiz()" style="padding:13px 28px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer">أعد الاختبار</button><button onclick="resetQuiz()" class="btn-s" style="padding:13px 24px">رجوع</button></div></div>`;return;}
+  const q=qqs[qcur];
+  let h=`<div class="prog"><div class="pfill" style="width:${(qcur/qqs.length)*100}%"></div></div><p style="font-size:11px;color:var(--mut);text-align:center;margin-bottom:12px">${qcur+1} من ${qqs.length}</p><div class="card" style="font-size:16px;font-weight:600;line-height:1.65;text-align:center;margin-bottom:12px">${q.question}</div>`;
+  q.options.forEach((opt,i)=>{let cls="qopt";if(qsel!==null){if(i===q.correct)cls+=" ok";else if(i===qsel)cls+=" no";}h+=`<button class="${cls}" ${qsel!==null?"disabled":""} onclick="ansQ(${i})">${opt}</button>`;});
+  d.innerHTML=h;
+}
+function setQuizMode(mode){quizMode=mode;qqs=[];wqList=[];wqDone=false;drawQuiz();}
+function drawWritingQuiz(){
+  const d=document.getElementById("quizDiv");
+  if(!wqList.length){
+    d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px">
+      <div class="quiz-mode-tabs" style="width:100%;max-width:280px;">
+        <button class="quiz-mode-tab" onclick="setQuizMode('choice')">🔤 اختيار</button>
+        <button class="quiz-mode-tab on" onclick="setQuizMode('writing')">✍️ كتابة</button>
+      </div>
+      <span style="font-size:56px">✍️</span>
+      <h2 style="font-size:20px;font-weight:800">اختبار الكتابة</h2>
+      <p style="font-size:13px;color:var(--mut)">استمع للنطق واكتب الكلمة بالإنجليزية</p>
+      <button onclick="startWritingQuiz()" style="padding:13px 40px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">ابدأ ✍️</button></div>`;
+    return;
+  }
+  if(wqDone){
+    const pct=Math.round((wqSc/wqTotal)*100);
+    d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px"><div class="sring"><span style="font-size:28px;font-weight:800;color:var(--acc)">${pct}%</span></div><h2 style="font-size:20px;font-weight:800">${pct>=80?"ممتاز! 🎉":pct>=50?"جيد 👍":"استمر 💪"}</h2><p style="font-size:13px;color:var(--mut)">${wqSc} من ${wqTotal} إجابة صحيحة</p><div style="display:flex;gap:10px"><button onclick="startWritingQuiz()" style="padding:13px 28px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer">أعد</button><button onclick="setQuizMode('writing')" class="btn-s" style="padding:13px 24px">رجوع</button></div></div>`;
+    return;
+  }
+  const w=wqList[0];
+  d.innerHTML=`
+    <div class="prog"><div class="pfill" style="width:${((wqTotal-wqList.length)/wqTotal)*100}%"></div></div>
+    <p style="font-size:11px;color:var(--mut);text-align:center;margin-bottom:16px">${wqTotal-wqList.length+1} من ${wqTotal}</p>
+    <div class="card" style="text-align:center;padding:24px 20px;margin-bottom:12px;">
+      <p style="font-size:12px;color:var(--mut);margin-bottom:8px;">المعنى</p>
+      <div style="font-size:22px;font-weight:800;color:var(--acc2);margin-bottom:8px;">${w.arabic}</div>
+      <div style="font-size:14px;color:var(--mut);direction:ltr;margin-bottom:16px;">${w.phonetic}</div>
+      <button onclick="spkWriting('${w.word.replace(/'/g,"\'")}',this)" style="background:rgba(139,58,158,.15);color:var(--acc2);border:1px solid rgba(139,58,158,.25);border-radius:20px;padding:8px 20px;font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;">🔊 استمع للنطق</button>
+    </div>
+    <input class="wq-inp" id="wqInp" type="text" placeholder="اكتب الكلمة هنا..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter')checkWriting()"/>
+    <div id="wqFeedback" style="min-height:44px;text-align:center;margin:10px 0;font-size:14px;"></div>
+    <button onclick="checkWriting()" id="wqBtn" style="width:100%;padding:14px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">تحقق ✓</button>`;
+  setTimeout(()=>{const inp=document.getElementById("wqInp");if(inp)inp.focus();},200);
+}
+async function spkWriting(word,btn){
+  if(btn){btn.textContent="⏳";btn.disabled=true;}
+  try{
+    const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+EL_VOICE,{method:"POST",headers:{"Content-Type":"application/json","xi-api-key":EL_KEY},body:JSON.stringify({text:word,model_id:"eleven_multilingual_v2",voice_settings:{stability:0.5,similarity_boost:0.75}})});
+    if(!r.ok)throw new Error();
+    const blob=await r.blob();const url=URL.createObjectURL(blob);const audio=new Audio(url);audio.play();audio.onended=()=>URL.revokeObjectURL(url);
+  }catch(e){
+    if(window.speechSynthesis){window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(word);u.lang="en-US";window.speechSynthesis.speak(u);}
+  }
+  if(btn){btn.textContent="🔊 استمع للنطق";btn.disabled=false;}
+}
+function checkWriting(){
+  const inp=document.getElementById("wqInp");
+  const fb=document.getElementById("wqFeedback");
+  const btn=document.getElementById("wqBtn");
+  if(!inp||!fb||!wqList.length)return;
+  const ans=inp.value.trim().toLowerCase();
+  const correct=wqList[0].word.toLowerCase();
+  if(!ans)return;
+  inp.disabled=true;
+  if(btn)btn.disabled=true;
+  if(ans===correct){
+    inp.classList.add("ok");
+    fb.innerHTML=`<span style="color:var(--grn);font-size:22px;">✅ ممتاز!</span>`;
+    wqSc++;
+  }else{
+    inp.classList.add("no");
+    fb.innerHTML=`<span style="color:var(--red);font-size:13px;">❌ الصواب: </span><span style="font-family:'Playfair Display',serif;font-size:20px;color:var(--txt);">${wqList[0].word}</span>`;
+  }
+  wqList.shift();
+  setTimeout(()=>{if(!wqList.length){wqDone=true;}drawWritingQuiz();},1400);
+}
+function startWritingQuiz(){
+  wqList=shuffle(st.saved).slice(0,8);
+  wqTotal=wqList.length;wqSc=0;wqDone=false;
+  drawWritingQuiz();
+}
 function startQuiz(){st.quizzes++;save();const sel=shuffle(st.saved).slice(0,8);qqs=sel.map(word=>{const eToA=Math.random()>.5;const pool=st.words.filter(w=>w.word!==word.word);const wr=shuffle(pool).slice(0,3);const ci=Math.floor(Math.random()*4);const opts=[];let wi=0;for(let i=0;i<4;i++){if(i===ci)opts.push(eToA?word.arabic:word.word);else opts.push(eToA?wr[wi]?.arabic||"—":wr[wi]?.word||"—");wi++;}return{question:eToA?`ما معنى "${word.word}" بالعربي؟`:`ما الكلمة الإنجليزية لـ "${word.arabic}"؟`,options:opts,correct:ci};});qcur=0;qsc=0;qsel=null;qdone=false;drawQuiz();}
 function ansQ(idx){if(qsel!==null)return;qsel=idx;document.querySelectorAll(".qopt").forEach((b,i)=>{b.disabled=true;if(i===qqs[qcur].correct)b.classList.add("ok");else if(i===idx)b.classList.add("no");});if(idx===qqs[qcur].correct)qsc++;setTimeout(()=>{qcur++;qsel=null;if(qcur>=qqs.length){const pct=Math.round((qsc/qqs.length)*100);if(pct>st.best){st.best=pct;save();}qdone=true;}drawQuiz();},900);}
 function resetQuiz(){qqs=[];qcur=0;qsc=0;qsel=null;qdone=false;drawQuiz();}
