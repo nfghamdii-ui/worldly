@@ -251,7 +251,7 @@ function showApp(){document.getElementById("authScreen").style.display="none";do
 function load(){try{const s=JSON.parse(localStorage.getItem("qulex_pwa")||"{}");st={...st,...s};const today=new Date().toDateString();const yest=new Date(Date.now()-86400000).toDateString();if(st.lastVisit===today){}else if(st.lastVisit===yest)st.streak=(st.streak||0)+1;else st.streak=1;st.lastVisit=today;if(st.dailyDate!==today){st.dailyCount=0;st.dailyDate=today;}}catch(e){}}
 function save(){localStorage.setItem("qulex_pwa",JSON.stringify(st));}
 function updHeader(){const el=document.getElementById("streakNum");if(el)el.textContent=st.streak;const av=document.getElementById("userAvatar");if(av){if(currentUser?.email){av.textContent=currentUser.email[0].toUpperCase();av.title=currentUser.email;}else av.textContent="👤";}}
-function nextWord(){tipOpen=false;gramOpen=false;noteEdit=false;const today=new Date().toDateString();if(st.dailyDate===today)st.dailyCount=Math.min(st.dailyCount+1,DAILY_GOAL);save();const filtered=st.words.filter(w=>(st.fLevel==="الكل"||w.level===st.fLevel)&&(st.fCat==="الكل"||w.cat===st.fCat));const nextIdx=filtered.findIndex(w=>w.word===st.words[st.curIdx]?.word);if(filtered.length>1){const next=(nextIdx+1)%filtered.length;st.curIdx=st.words.indexOf(filtered[next]);save();drawHome();}else genWord();}
+async function nextWord(){tipOpen=false;gramOpen=false;noteEdit=false;const today=new Date().toDateString();if(st.dailyDate===today)st.dailyCount=Math.min(st.dailyCount+1,DAILY_GOAL);save();gen=true;drawHome();const w=await fetchRandomWord();gen=false;if(w){if(!st.words.find(x=>x.word===w.word))st.words.push(w);st.curIdx=st.words.length-1;save();}drawHome();updCnt();}
 function prevWord(){tipOpen=false;gramOpen=false;noteEdit=false;if(st.curIdx>0){st.curIdx--;save();drawHome();}}
 async function genWord(){if(gen)return;gen=true;tipOpen=false;gramOpen=false;noteEdit=false;drawHome();const used=st.words.slice(-20).map(w=>w.word).join(",");const lvl=st.fLevel==="الكل"?["مبتدئ","متوسط","متقدم"][Math.floor(Math.random()*3)]:st.fLevel;const cat=st.fCat==="الكل"?"عام":st.fCat;const prompt=`علّم العرب إنجليزي. اختر كلمة ${lvl==="مبتدئ"?"سهلة":lvl==="متقدم"?"متقدمة":"متوسطة"} عن "${cat}". لا تكرر: ${used||"لا"}.\nJSON فقط:\n{"word":"","phonetic":"","type":"اسم/فعل/صفة","arabic":"","level":"${lvl}","cat":"${cat}","definition":"جملة","examples":[{"en":"","ar":""},{"en":"","ar":""},{"en":"","ar":""}],"tip":"","grammar":{"rule":"","explanation":"جملتان","correct":"","wrong":"","tip":""}}`;try{const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:800,messages:[{role:"user",content:prompt}]})});const d=await r.json();const t=(d.content||[]).find(b=>b.type==="text")?.text||"";const w=JSON.parse(t.replace(/```json|```/g,"").trim());st.words.push(w);st.curIdx=st.words.length-1;save();}catch(e){document.getElementById("homeDiv").innerHTML+=`<p style="color:var(--red);text-align:center;font-size:12px;margin-top:8px;">تعذّر التوليد</p>`;}gen=false;drawHome();updCnt();}
 async function spk(txt,rate=1){
@@ -329,7 +329,7 @@ function wordHTML(w,opts={}){
 function toggleTip(){tipOpen=!tipOpen;const b=document.getElementById("tipBtnEl");const d=document.getElementById("tipBoxEl");if(b)b.textContent=tipOpen?"💡 إخفاء النصيحة":"💡 نصيحة لتذكر الكلمة";if(d)d.style.display=tipOpen?"block":"none";}
 function toggleGram(){gramOpen=!gramOpen;const b=document.getElementById("gramBody");const a=document.getElementById("garrw");if(b)b.style.display=gramOpen?"block":"none";if(a)a.textContent=gramOpen?"▲":"▼";}
 function toggleNote(word){if(noteEdit){const v=document.getElementById("noteInpEl")?.value||"";st.notes[word]=v;save();const d=document.getElementById("noteDispEl");const i=document.getElementById("noteInpEl");const b=document.getElementById("noteBtnEl");if(d){d.style.display="block";d.textContent=v||"لا توجد ملاحظة — اضغط تعديل";d.style.color=v?"var(--txt)":"var(--mut)";}if(i)i.style.display="none";if(b)b.textContent="تعديل ✏️";noteEdit=false;}else{const d=document.getElementById("noteDispEl");const i=document.getElementById("noteInpEl");const b=document.getElementById("noteBtnEl");if(d)d.style.display="none";if(i){i.style.display="block";i.focus();}if(b)b.textContent="حفظ ✓";noteEdit=true;}}
-function drawHome(){const d=document.getElementById("homeDiv");const hasF=st.fLevel!=="الكل"||st.fCat!=="الكل";let filterLabel="فلترة الكلمات";if(hasF){let parts=[];if(st.fLevel!=="الكل")parts.push(st.fLevel);if(st.fCat!=="الكل")parts.push((CICO[st.fCat]||"")+" "+st.fCat);filterLabel=parts.join(" · ");}let h=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><button onclick="openFilt()" style="display:flex;align-items:center;gap:6px;background:${hasF?"var(--acc)":"none"};border:1px solid ${hasF?"var(--acc)":"#2a2a2a"};border-radius:20px;padding:7px 14px;color:${hasF?"#fff":"var(--mut)"};font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;">🎯 ${filterLabel}</button><span style="font-size:11px;color:var(--mut)">${st.words.length} كلمة</span></div>`;if(gen){h+=`<div class="gen-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span style="font-size:13px;color:var(--mut)">جاري التوليد...</span></div>`;}else{const w=st.words[st.curIdx];if(w)h+=wordHTML(w,{next:true,save:true});else h+=`<div class="empty"><div style="font-size:56px;margin-bottom:12px">✨</div><h2 style="font-size:20px;font-weight:800;margin-bottom:8px">ابدأ رحلتك!</h2><button onclick="location.reload()" style="padding:13px 36px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">تحديث 🔄</button></div>`;}d.innerHTML=h;}
+function drawHome(){const d=document.getElementById("homeDiv");const hasF=st.fLevel!=="الكل"||st.fCat!=="الكل";let filterLabel="فلترة الكلمات";if(hasF){let parts=[];if(st.fLevel!=="الكل")parts.push(st.fLevel);if(st.fCat!=="الكل")parts.push((CICO[st.fCat]||"")+" "+st.fCat);filterLabel=parts.join(" · ");}let h=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><button onclick="openFilt()" style="display:flex;align-items:center;gap:6px;background:${hasF?"var(--acc)":"none"};border:1px solid ${hasF?"var(--acc)":"#2a2a2a"};border-radius:20px;padding:7px 14px;color:${hasF?"#fff":"var(--mut)"};font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;">🎯 ${filterLabel}</button><span style="font-size:11px;color:var(--mut)">${totalWordsCount||st.words.length} كلمة</span></div>`;if(gen){h+=`<div class="gen-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span style="font-size:13px;color:var(--mut)">جاري التوليد...</span></div>`;}else{const w=st.words[st.curIdx];if(w)h+=wordHTML(w,{next:true,save:true});else h+=`<div class="empty"><div style="font-size:56px;margin-bottom:12px">✨</div><h2 style="font-size:20px;font-weight:800;margin-bottom:8px">ابدأ رحلتك!</h2><button onclick="location.reload()" style="padding:13px 36px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">تحديث 🔄</button></div>`;}d.innerHTML=h;}
 function drawLib(){const d=document.getElementById("libDiv");if(libSel){d.innerHTML=wordHTML(libSel,{back:true,backFn:"closeLib",del:true,save:false});return;}const q=(d.querySelector(".srch")?.value||"").toLowerCase();const f=st.saved.filter(w=>w.word.toLowerCase().includes(q)||w.arabic.includes(q));let h=`<input class="srch" placeholder="ابحث عن كلمة..." oninput="drawLib()" dir="auto" value="${q}"/><div style="font-size:12px;color:var(--mut);margin-bottom:10px">${st.saved.length} كلمة محفوظة</div>`;if(!st.saved.length)h+=`<div class="empty"><div style="font-size:44px">📭</div><p style="font-weight:700;margin-top:8px">لا توجد كلمات بعد</p></div>`;else if(!f.length)h+=`<div class="empty"><div style="font-size:44px">🔍</div><p style="font-weight:700;margin-top:8px">لا توجد نتائج</p></div>`;else f.forEach(w=>{const lc=LCOL[w.level]||"var(--acc)";h+=`<div class="lcard" onclick="openLib('${esc(w.word)}')"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-family:'Playfair Display',serif;font-size:18px">${w.word}</span><span style="font-size:9px;background:${lc}22;color:${lc};border-radius:6px;padding:2px 7px">${w.level}</span>${w.grammar?`<span style="font-size:9px;background:rgba(196,122,191,.15);color:var(--acc2);border-radius:6px;padding:2px 7px">📐</span>`:""}</div><p style="font-size:14px;font-weight:700;color:var(--acc);margin-bottom:2px">${w.arabic}</p><p style="font-size:11px;color:var(--mut);direction:ltr;text-align:right">${w.phonetic}</p><span style="position:absolute;top:14px;left:14px;color:var(--mut);font-size:16px">›</span></div>`;});d.innerHTML=h;}
 function openLib(word){libSel=st.saved.find(w=>w.word===word);tipOpen=false;gramOpen=false;noteEdit=false;drawLib();}
 function closeLib(){libSel=null;drawLib();}
@@ -508,7 +508,47 @@ async function toggleYT(word){
     btn.style.background="";
   }
 }
-async function fetchWords(){try{const r=await fetch(SB_URL+"/rest/v1/words?select=*&limit=500",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});const data=await r.json();if(data&&data.length>0){data.forEach(w=>{if(!st.words.find(x=>x.word===w.word))st.words.push(w);});if(st.curIdx<0||st.curIdx>=st.words.length)st.curIdx=0;save();drawHome();updCnt();}}catch(e){}}
+// جلب عدد الكلمات الكلي
+let totalWordsCount=0;
+async function fetchTotalCount(){
+  try{
+    const lvlF=st.fLevel!=="الكل"?`&level=eq.${encodeURIComponent(st.fLevel)}`:"";
+    const catF=st.fCat!=="الكل"?`&cat=eq.${encodeURIComponent(st.fCat)}`:"";
+    const r=await fetch(SB_URL+"/rest/v1/words?select=id"+lvlF+catF,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"count=exact","Range":"0-0"}});
+    const cnt=r.headers.get("content-range");
+    if(cnt){totalWordsCount=parseInt(cnt.split("/")[1])||0;}
+  }catch(e){}
+}
+// جلب كلمة عشوائية واحدة من Supabase
+async function fetchRandomWord(excludeWords=[]){
+  try{
+    const lvlF=st.fLevel!=="الكل"?`&level=eq.${encodeURIComponent(st.fLevel)}`:"";
+    const catF=st.fCat!=="الكل"?`&cat=eq.${encodeURIComponent(st.fCat)}`:"";
+    // جلب عدد الكلمات
+    const countR=await fetch(SB_URL+"/rest/v1/words?select=id"+lvlF+catF,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"count=exact","Range":"0-0"}});
+    const cnt=countR.headers.get("content-range");
+    const total=cnt?parseInt(cnt.split("/")[1]):0;
+    if(!total)return null;
+    // اختر offset عشوائي
+    const offset=Math.floor(Math.random()*total);
+    const r=await fetch(SB_URL+"/rest/v1/words?select=*"+lvlF+catF+`&offset=${offset}&limit=1`,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+    const data=await r.json();
+    if(data&&data.length>0){
+      totalWordsCount=total;
+      return data[0];
+    }
+  }catch(e){}
+  return null;
+}
+async function fetchWords(){
+  // جلب أول كلمة عشوائية لعرضها
+  const w=await fetchRandomWord();
+  if(w){
+    if(!st.words.find(x=>x.word===w.word))st.words.push(w);
+    st.curIdx=st.words.length-1;
+    save();drawHome();updCnt();
+  }
+}
 function initApp(){load();if(!st.dark)document.body.classList.add("light");updCnt();window.speechSynthesis?.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();if(st.words&&st.words.length>0){if(st.curIdx<0||st.curIdx>=st.words.length)st.curIdx=0;drawHome();}else{document.getElementById("homeDiv").innerHTML=`<div style="text-align:center;padding:60px 20px;"><div class="gen-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><p style="font-size:13px;color:var(--mut);margin-top:12px;">جاري تحميل الكلمات...</p></div>`;}fetchWords();if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}}
 load();
 if(!st.dark)document.body.classList.add("light");
