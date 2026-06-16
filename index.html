@@ -297,9 +297,10 @@ function wordHTML(w,opts={}){
   ${opts.back?`<button class="back" onclick="${opts.backFn}()">← رجوع</button>`:""}
   <div class="hero word-anim">
     ${opts.next?`<div class="daily-bar-wrap"><div class="daily-label"><span>كلمات اليوم</span><span>${st.dailyCount}/${DAILY_GOAL}</span></div><div class="daily-bar"><div class="daily-fill" style="width:${dailyPct}%"></div></div></div>`:""}
-    <div style="display:flex;justify-content:center;gap:14px;margin-bottom:10px;position:relative;z-index:1;">
+    <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;position:relative;z-index:1;">
       <span style="font-size:12px;color:${lc};font-weight:700;background:${lc}18;padding:3px 10px;border-radius:20px;">${w.level}</span>
       <span style="font-size:12px;color:var(--acc2);font-weight:700;background:rgba(196,122,191,.12);padding:3px 10px;border-radius:20px;">${CICO[w.cat]||""} ${w.cat}</span>
+      ${w.type?`<span style="font-size:12px;color:var(--mut);font-weight:600;background:rgba(255,255,255,.06);padding:3px 10px;border-radius:20px;direction:ltr;">${w.type}</span>`:""}
     </div>
     <div class="word-big">${w.word}</div>
     <div class="word-ph">${w.phonetic}</div>
