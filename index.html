@@ -442,7 +442,7 @@ function openFilt(){document.getElementById("lvlPills").innerHTML=LEVELS.map(l=>
 function closeFilt(){document.getElementById("fov").style.display="none";}
 function setL(l){st.fLevel=l;openFilt();}
 function setC(c){st.fCat=c;openFilt();}
-function applyFilt(){closeFilt();genWord();}
+function applyFilt(){closeFilt();wordBuffer=[];genWord();}
 function go(tab){curtab=tab;tipOpen=false;gramOpen=false;noteEdit=false;document.querySelectorAll(".page").forEach(p=>p.classList.remove("on"));document.querySelectorAll(".tab").forEach(t=>t.classList.remove("on"));document.getElementById("p-"+tab).classList.add("on");const tabs=["home","library","flash","quiz","grammar","stats"];document.querySelectorAll(".tab")[tabs.indexOf(tab)]?.classList.add("on");document.getElementById("mainContent").scrollTop=0;if(tab==="library"){libSel=null;drawLib();}if(tab==="flash"){fcIdx=0;fcFlip=false;fcDone=false;drawFlash();}if(tab==="quiz")drawQuiz();if(tab==="stats")drawStats();if(tab==="grammar")drawGrammar();}
 function toggleSave(word){const w=st.words.find(x=>x.word===word);if(!w)return;const i=st.saved.findIndex(s=>s.word===word);const removing=i>=0;if(removing){st.saved.splice(i,1);}else{st.saved.push(w);const today=new Date().toDateString();if(st.dailyDate===today)st.dailyCount=Math.min(st.dailyCount+1,DAILY_GOAL);else{st.dailyCount=1;st.dailyDate=today;}save();}save();updCnt();const btn=document.getElementById("saveBtnEl");if(btn){btn.classList.add("save-anim");setTimeout(()=>btn.classList.remove("save-anim"),300);}syncSaveToCloud(word,removing);if(curtab==="home")drawHome();}
 function delWord(word){st.saved=st.saved.filter(s=>s.word!==word);save();updCnt();syncSaveToCloud(word,true);libSel=null;drawLib();}
@@ -520,30 +520,49 @@ async function fetchTotalCount(){
     if(cnt){totalWordsCount=parseInt(cnt.split("/")[1])||0;}
   }catch(e){}
 }
-// جلب كلمة عشوائية واحدة من Supabase
+// مخزن مؤقت للكلمات العشوائية
+let wordBuffer=[];
+// جلب كلمة عشوائية من المخزن
 async function fetchRandomWord(){
   try{
     const lvlF=st.fLevel!=="الكل"?`&level=eq.${encodeURIComponent(st.fLevel)}`:"";
     const catF=st.fCat!=="الكل"?`&cat=eq.${encodeURIComponent(st.fCat)}`:"";
-    // جلب العدد الكلي
-    const countR=await fetch(SB_URL+"/rest/v1/words?select=id"+lvlF+catF,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"count=exact","Range":"0-0"}});
-    const cnt=countR.headers.get("content-range");
-    const total=cnt?parseInt(cnt.split("/")[1]):0;
-    if(!total)return null;
-    totalWordsCount=total;
-    // الكلمة الحالية فقط نتجنبها
+    // إذا المخزن فاضي، اجلب 10 كلمات بـ offsets مختلفة
+    if(wordBuffer.length===0){
+      const countR=await fetch(SB_URL+"/rest/v1/words?select=id"+lvlF+catF,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"count=exact","Range":"0-0"}});
+      const cnt=countR.headers.get("content-range");
+      const total=cnt?parseInt(cnt.split("/")[1]):0;
+      if(!total)return null;
+      totalWordsCount=total;
+      // جلب 10 كلمات بـ offsets عشوائية مختلفة
+      const offsets=new Set();
+      while(offsets.size<Math.min(10,total)){
+        offsets.add(Math.floor(Math.random()*total));
+      }
+      const fetches=Array.from(offsets).map(offset=>
+        fetch(SB_URL+"/rest/v1/words?select=*"+lvlF+catF+`&offset=${offset}&limit=1`,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}})
+        .then(r=>r.json()).then(d=>d[0]).catch(()=>null)
+      );
+      const results=await Promise.all(fetches);
+      wordBuffer=results.filter(w=>w!=null);
+      // خلط البuffer
+      for(let i=wordBuffer.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [wordBuffer[i],wordBuffer[j]]=[wordBuffer[j],wordBuffer[i]];
+      }
+    }
+    // إخراج كلمة من المخزن وتجنب الكلمة الحالية
     const currentWord=st.words[st.curIdx]?.word?.toLowerCase()||"";
     let word=null;
-    let tries=0;
-    while(tries<8){
-      const offset=Math.floor(Math.random()*total);
-      const r=await fetch(SB_URL+"/rest/v1/words?select=*"+lvlF+catF+`&offset=${offset}&limit=1`,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
-      const data=await r.json();
-      if(data&&data.length>0&&data[0].word.toLowerCase()!==currentWord){
-        word=data[0];
+    for(let i=0;i<wordBuffer.length;i++){
+      if(wordBuffer[i].word.toLowerCase()!==currentWord){
+        word=wordBuffer.splice(i,1)[0];
         break;
       }
-      tries++;
+    }
+    // لو كل الكلمات نفس الكلمة الحالية
+    if(!word&&wordBuffer.length>0){
+      word=wordBuffer.shift();
     }
     return word;
   }catch(e){}
