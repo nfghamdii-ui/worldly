@@ -167,6 +167,23 @@ body.light .auth-box{background:rgba(255,255,255,.95);}
 .conj-row td{padding:8px 12px;font-size:13px;}
 .conj-row td:first-child{color:var(--mut);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;width:45%;text-align:right;}
 .conj-row td:last-child{color:var(--txt);direction:ltr;text-align:left;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;background:var(--surf2);border-radius:8px;cursor:pointer;}
+
+.gl-level-tabs{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;}
+.gl-level-tab{flex-shrink:0;padding:6px 16px;border-radius:20px;border:1px solid #2a2a2a;background:none;color:var(--mut);font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;}
+.gl-level-tab.on{background:var(--acc);border-color:var(--acc);color:#fff;}
+.gl-cat-card{background:var(--surf);border-radius:14px;margin-bottom:8px;overflow:hidden;}
+.gl-cat-head{width:100%;padding:14px 16px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;direction:ltr;font-family:'Tajawal',sans-serif;}
+.gl-cat-body{border-top:1px solid #1a1a1a;}
+.gl-lesson{padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;display:flex;align-items:center;justify-content:space-between;direction:ltr;transition:background .15s;}
+.gl-lesson:last-child{border-bottom:none;}
+.gl-detail{position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto;direction:ltr;}
+.gl-detail-header{padding:calc(16px + var(--safe-top)) 16px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #1a1a1a;position:sticky;top:0;background:var(--bg);z-index:1;direction:ltr;}
+.gl-detail-body{padding:16px;direction:ltr;}
+.gl-rule-box{background:rgba(139,58,158,.08);border:1px solid rgba(139,58,158,.2);border-radius:12px;padding:14px;margin-bottom:14px;font-size:14px;color:var(--acc2);font-weight:600;}
+.gl-ex{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:10px;font-size:13px;margin-bottom:8px;}
+.gl-ex-ok{background:rgba(62,200,122,.08);border:1px solid rgba(62,200,122,.15);}
+.gl-ex-no{background:rgba(224,85,85,.08);border:1px solid rgba(224,85,85,.15);}
+.gl-tip{background:var(--surf2);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--acc2);margin-top:8px;}
 </style>
 </head>
 <body>
