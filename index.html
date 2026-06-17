@@ -71,8 +71,6 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .save-btn.saved{background:var(--grn);color:#fff;}
 .save-btn svg{width:18px;height:18px;transition:all .2s;}
 .swipe-hint{font-size:11px;color:var(--mut);text-align:center;margin-top:10px;position:relative;z-index:1;opacity:.5;}
-.cb-btn{width:100%;padding:11px;background:rgba(62,200,122,.08);color:#3ec87a;border:1px dashed rgba(62,200,122,.25);border-radius:12px;font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;}
-.cb-frame{margin-top:10px;border-radius:12px;overflow:hidden;border:1px solid #1a1a1a;}
 .yt-btn{width:100%;padding:11px;background:rgba(255,50,50,.08);color:#ff5050;border:1px dashed rgba(255,50,50,.2);border-radius:12px;font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;}
 .yt-frame{margin-top:10px;border-radius:12px;overflow:hidden;border:1px solid #1a1a1a;}
 .gen-bar{display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;margin-bottom:8px;background:var(--surf);border-radius:14px;}
@@ -121,7 +119,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .bitem{background:var(--surf2);border:none;border-radius:12px;padding:10px 8px;text-align:center;opacity:.4;}
 .bitem.got{background:rgba(139,58,158,.15);opacity:1;}
 .prog{height:4px;background:var(--surf2);border-radius:99px;overflow:hidden;margin-bottom:6px;}
-.pfill{height:100%;background:var(--acc);border-radius:99px;transition:width .4s;}
+.pfill{height:100%;background:var(--acc);border-radius:99px;transition:width .4px;}
 .fov{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:flex-end;justify-content:center;}
 .fsheet{background:#0f0f0f;border-radius:20px 20px 0 0;padding:20px 16px calc(36px + var(--safe-bot));width:100%;max-width:460px;}
 .pill{padding:8px 16px;border-radius:20px;border:1px solid #2a2a2a;background:none;color:var(--txt);font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;margin:3px;}
@@ -149,7 +147,7 @@ body.light .auth-box{background:rgba(255,255,255,.95);}
 .conj-table{width:100%;border-collapse:separate;border-spacing:0 6px;}
 .conj-row td{padding:8px 12px;font-size:13px;}
 .conj-row td:first-child{color:var(--mut);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;width:45%;text-align:right;}
-.conj-row td:last-child{color:var(--txt);direction:ltr;text-align:left;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;background:var(--surf2);border-radius:8px;}
+.conj-row td:last-child{color:var(--txt);direction:ltr;text-align:left;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;background:var(--surf2);border-radius:8px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -260,7 +258,7 @@ function prevWord(){tipOpen=false;gramOpen=false;noteEdit=false;if(st.curIdx>0){
 async function genWord(){if(gen)return;gen=true;tipOpen=false;gramOpen=false;noteEdit=false;drawHome();const used=st.words.slice(-20).map(w=>w.word).join(",");const lvl=st.fLevel==="الكل"?["مبتدئ","متوسط","متقدم"][Math.floor(Math.random()*3)]:st.fLevel;const cat=st.fCat==="الكل"?"عام":st.fCat;const prompt=`علّم العرب إنجليزي. اختر كلمة ${lvl==="مبتدئ"?"سهلة":lvl==="متقدم"?"متقدمة":"متوسطة"} عن "${cat}". لا تكرر: ${used||"لا"}.\nJSON فقط:\n{"word":"","phonetic":"","type":"اسم/فعل/صفة","arabic":"","level":"${lvl}","cat":"${cat}","definition":"جملة","examples":[{"en":"","ar":""},{"en":"","ar":""},{"en":"","ar":""}],"tip":"","grammar":{"rule":"","explanation":"جملتان","correct":"","wrong":"","tip":""}}`;try{const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:800,messages:[{role:"user",content:prompt}]})});const d=await r.json();const t=(d.content||[]).find(b=>b.type==="text")?.text||"";const w=JSON.parse(t.replace(/```json|```/g,"").trim());st.words.push(w);st.curIdx=st.words.length-1;save();}catch(e){document.getElementById("homeDiv").innerHTML+=`<p style="color:var(--red);text-align:center;font-size:12px;margin-top:8px;">تعذّر التوليد</p>`;}gen=false;drawHome();updCnt();}
 async function spk(txt,rate=1){
   const btn=event?.currentTarget;
-  if(btn){btn.textContent="⏳";btn.disabled=true;}
+  if(btn&&btn.tagName==="BUTTON"){btn.textContent="⏳";btn.disabled=true;}
   try{
     const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+EL_VOICE,{
       method:"POST",
@@ -285,11 +283,9 @@ async function spk(txt,rate=1){
       window.speechSynthesis.speak(u);
     }
   }
-  if(btn){btn.textContent="🔊 استمع";btn.disabled=false;}
+  if(btn&&btn.tagName==="BUTTON"){btn.textContent="🔊 استمع";btn.disabled=false;}
 }
 function esc(s){return(s||"").replace(/'/g,"\\'").replace(/"/g,'\\"');}
-
-
 
 function wordHTML(w,opts={}){
   if(!w)return"";
@@ -319,12 +315,12 @@ function wordHTML(w,opts={}){
   <div class="card"><div class="lbl">📖 التعريف</div><p style="font-size:14px;line-height:1.75">${w.definition}</p></div>
   <div class="card"><div class="lbl">💬 أمثلة</div>${w.examples.map(ex=>`<div class="ex-block"><div class="ex-row"><p class="ex-en">"${ex.en}"</p><button class="spk-sm" onclick="spk('${esc(ex.en)}',.85)">🔊</button></div><p class="ex-ar">${ex.ar}</p></div>`).join("")}</div>
   ${w.conjugations&&w.type&&w.type.toLowerCase().includes('verb')?`<div class="card"><div class="lbl">⏰ تصريف الفعل</div><table class="conj-table">
-    <tr class="conj-row"><td>المضارع</td><td>${w.conjugations.present||''}</td></tr>
-    <tr class="conj-row"><td>الماضي</td><td>${w.conjugations.past||''}</td></tr>
-    <tr class="conj-row"><td>التصريف الثالث</td><td>${w.conjugations.past_participle||''}</td></tr>
-    <tr class="conj-row"><td>المستمر</td><td>${w.conjugations.continuous||''}</td></tr>
-    <tr class="conj-row"><td>النفي</td><td>${w.conjugations.negative_past||''}</td></tr>
-    <tr class="conj-row"><td>السؤال</td><td>${w.conjugations.question||''}</td></tr>
+    <tr class="conj-row"><td>المضارع</td><td onclick="spk(this.dataset.v,1)" data-v="${esc(w.conjugations.present||'')}">${w.conjugations.present||''} <span style="opacity:.35;font-size:11px">🔊</span></td></tr>
+    <tr class="conj-row"><td>الماضي</td><td onclick="spk(this.dataset.v,1)" data-v="${esc(w.conjugations.past||'')}">${w.conjugations.past||''} <span style="opacity:.35;font-size:11px">🔊</span></td></tr>
+    <tr class="conj-row"><td>التصريف الثالث</td><td onclick="spk(this.dataset.v,1)" data-v="${esc(w.conjugations.past_participle||'')}">${w.conjugations.past_participle||''} <span style="opacity:.35;font-size:11px">🔊</span></td></tr>
+    <tr class="conj-row"><td>المستمر</td><td onclick="spk(this.dataset.v,1)" data-v="${esc(w.conjugations.continuous||'')}">${w.conjugations.continuous||''} <span style="opacity:.35;font-size:11px">🔊</span></td></tr>
+    <tr class="conj-row"><td>النفي</td><td onclick="spk(this.dataset.v,1)" data-v="${esc(w.conjugations.negative_past||'')}">${w.conjugations.negative_past||''} <span style="opacity:.35;font-size:11px">🔊</span></td></tr>
+    <tr class="conj-row"><td>السؤال</td><td onclick="spk(this.dataset.v,1)" data-v="${esc(w.conjugations.question||'')}">${w.conjugations.question||''} <span style="opacity:.35;font-size:11px">🔊</span></td></tr>
   </table></div>`:''}
   <div class="card">
     <div class="lbl" style="margin-bottom:10px;">🎬 شوف الكلمة في جملة حقيقية</div>
@@ -430,22 +426,12 @@ function checkWriting(){
   if(!ans)return;
   inp.disabled=true;
   if(btn)btn.disabled=true;
-  if(ans===correct){
-    inp.classList.add("ok");
-    fb.innerHTML=`<span style="color:var(--grn);font-size:22px;">✅ ممتاز!</span>`;
-    wqSc++;
-  }else{
-    inp.classList.add("no");
-    fb.innerHTML=`<span style="color:var(--red);font-size:13px;">❌ الصواب: </span><span style="font-family:'Playfair Display',serif;font-size:20px;color:var(--txt);">${wqList[0].word}</span>`;
-  }
+  if(ans===correct){inp.classList.add("ok");fb.innerHTML=`<span style="color:var(--grn);font-size:22px;">✅ ممتاز!</span>`;wqSc++;}
+  else{inp.classList.add("no");fb.innerHTML=`<span style="color:var(--red);font-size:13px;">❌ الصواب: </span><span style="font-family:'Playfair Display',serif;font-size:20px;color:var(--txt);">${wqList[0].word}</span>`;}
   wqList.shift();
   setTimeout(()=>{if(!wqList.length){wqDone=true;}drawWritingQuiz();},1400);
 }
-function startWritingQuiz(){
-  wqList=shuffle(st.saved).slice(0,8);
-  wqTotal=wqList.length;wqSc=0;wqDone=false;
-  drawWritingQuiz();
-}
+function startWritingQuiz(){wqList=shuffle(st.saved).slice(0,8);wqTotal=wqList.length;wqSc=0;wqDone=false;drawWritingQuiz();}
 function startQuiz(){st.quizzes++;save();const sel=shuffle(st.saved).slice(0,8);qqs=sel.map(word=>{const eToA=Math.random()>.5;const pool=st.words.filter(w=>w.word!==word.word);const wr=shuffle(pool).slice(0,3);const ci=Math.floor(Math.random()*4);const opts=[];let wi=0;for(let i=0;i<4;i++){if(i===ci)opts.push(eToA?word.arabic:word.word);else opts.push(eToA?wr[wi]?.arabic||"—":wr[wi]?.word||"—");wi++;}return{question:eToA?`ما معنى "${word.word}" بالعربي؟`:`ما الكلمة الإنجليزية لـ "${word.arabic}"؟`,options:opts,correct:ci};});qcur=0;qsc=0;qsel=null;qdone=false;drawQuiz();}
 function ansQ(idx){if(qsel!==null)return;qsel=idx;document.querySelectorAll(".qopt").forEach((b,i)=>{b.disabled=true;if(i===qqs[qcur].correct)b.classList.add("ok");else if(i===idx)b.classList.add("no");});if(idx===qqs[qcur].correct)qsc++;setTimeout(()=>{qcur++;qsel=null;if(qcur>=qqs.length){const pct=Math.round((qsc/qqs.length)*100);if(pct>st.best){st.best=pct;save();}qdone=true;}drawQuiz();},900);}
 function resetQuiz(){qqs=[];qcur=0;qsc=0;qsel=null;qdone=false;drawQuiz();}
@@ -470,73 +456,14 @@ let gramCatOpen=-1;
 function drawGrammar(){const d=document.getElementById("grammarDiv");let h=`<h2 style="font-size:18px;font-weight:800;margin-bottom:4px;">القواعد النحوية 📐</h2><p style="font-size:12px;color:var(--mut);margin-bottom:16px;">تعلم القواعد الأساسية بأمثلة واضحة</p>`;GRAMMAR_CATS.forEach((cat,ci)=>{const isOpen=gramCatOpen===ci;h+=`<div class="gram-cat"><button class="gram-cat-head" onclick="toggleGramCat(${ci})"><div style="display:flex;align-items:center;flex:1;"><div class="gram-cat-icon" style="background:${cat.color}18;">${cat.icon}</div><div style="text-align:right;"><div style="font-size:15px;font-weight:800;color:var(--txt);">${cat.name}</div><div style="font-size:11px;color:var(--mut);">${cat.nameEn} · ${cat.rules.length} قواعد</div></div></div><span style="color:var(--mut);font-size:12px;margin-right:8px;">${isOpen?"▲":"▼"}</span></button>${isOpen?`<div class="gram-cat-body">${cat.rules.map(rule=>`<div class="gram-rule-card"><div class="gram-rule-title">${rule.title}</div><div class="gram-rule-desc">${rule.desc}</div>${rule.examples.map(ex=>`<div class="gram-rule-ex ${ex.ok?"gram-rule-ok":"gram-rule-no"}">${ex.ok?"✅":"❌"} ${ex.text}${ex.ar?`<div style="font-size:11px;opacity:.7;direction:rtl;text-align:right;margin-top:2px;">${ex.ar}</div>`:""}</div>`).join("")}<div class="gram-rule-tip">${rule.tip}</div></div>`).join("")}</div>`:""}</div>`;});d.innerHTML=h;}
 function toggleGramCat(idx){gramCatOpen=gramCatOpen===idx?-1:idx;drawGrammar();}
 let ytVideos=[];let ytIdx=0;let ytWord="";
-async function loadYTVideos(word){
-  ytWord=word;ytIdx=0;ytVideos=[];
-  const div=document.getElementById("ytIframeEl");
-  div.innerHTML=`<div style="padding:20px;text-align:center;"><span style="font-size:13px;color:var(--mut)">⏳ جاري البحث...</span></div>`;
-  try{
-    // Search for short pronunciation videos (videoDuration=short = under 4 min)
-    // Search for real videos where the word is naturally spoken (with captions)
-    const q=encodeURIComponent('"'+word+'" english speaking');
-    const r=await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&maxResults=5&videoCaption=closedCaption&relevanceLanguage=en&key=${YT_KEY}`);
-    const d=await r.json();
-    ytVideos=(d.items||[]).map(i=>i.id.videoId).filter(Boolean);
-    if(ytVideos.length>0){showYTVideo();}
-    else{div.innerHTML=`<p style="text-align:center;color:var(--mut);padding:20px;font-size:13px;">لم يتم العثور على مقطع</p>`;}
-  }catch(e){
-    div.innerHTML=`<p style="text-align:center;color:var(--red);padding:20px;font-size:13px;">تعذّر التحميل</p>`;
-  }
-}
-function showYTVideo(){
-  const div=document.getElementById("ytIframeEl");
-  const vid=ytVideos[ytIdx];
-  const hasNext=ytIdx<ytVideos.length-1;
-  const hasPrev=ytIdx>0;
-  div.innerHTML=`
-    <iframe width="100%" height="200" src="https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0&playsinline=1" frameborder="0" allow="autoplay;encrypted-media" style="display:block;border:none;border-radius:10px 10px 0 0;"></iframe>
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surf2);border-radius:0 0 10px 10px;">
-      <button onclick="prevYT()" ${hasPrev?"":"disabled"} style="background:none;border:none;color:${hasPrev?"var(--acc)":"var(--mut)"};font-size:18px;cursor:pointer;padding:4px 8px;">‹</button>
-      <span style="font-size:11px;color:var(--mut)">${ytIdx+1} / ${ytVideos.length}</span>
-      <button onclick="nextYT()" ${hasNext?"":"disabled"} style="background:none;border:none;color:${hasNext?"var(--acc)":"var(--mut)"};font-size:18px;cursor:pointer;padding:4px 8px;">›</button>
-    </div>`;
-}
+async function loadYTVideos(word){ytWord=word;ytIdx=0;ytVideos=[];const div=document.getElementById("ytIframeEl");div.innerHTML=`<div style="padding:20px;text-align:center;"><span style="font-size:13px;color:var(--mut)">⏳ جاري البحث...</span></div>`;try{const q=encodeURIComponent('"'+word+'" english speaking');const r=await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&maxResults=5&videoCaption=closedCaption&relevanceLanguage=en&key=${YT_KEY}`);const d=await r.json();ytVideos=(d.items||[]).map(i=>i.id.videoId).filter(Boolean);if(ytVideos.length>0){showYTVideo();}else{div.innerHTML=`<p style="text-align:center;color:var(--mut);padding:20px;font-size:13px;">لم يتم العثور على مقطع</p>`;}}catch(e){div.innerHTML=`<p style="text-align:center;color:var(--red);padding:20px;font-size:13px;">تعذّر التحميل</p>`;}}
+function showYTVideo(){const div=document.getElementById("ytIframeEl");const vid=ytVideos[ytIdx];const hasNext=ytIdx<ytVideos.length-1;const hasPrev=ytIdx>0;div.innerHTML=`<iframe width="100%" height="200" src="https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0&playsinline=1" frameborder="0" allow="autoplay;encrypted-media" style="display:block;border:none;border-radius:10px 10px 0 0;"></iframe><div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surf2);border-radius:0 0 10px 10px;"><button onclick="prevYT()" ${hasPrev?"":"disabled"} style="background:none;border:none;color:${hasPrev?"var(--acc)":"var(--mut)"};font-size:18px;cursor:pointer;padding:4px 8px;">‹</button><span style="font-size:11px;color:var(--mut)">${ytIdx+1} / ${ytVideos.length}</span><button onclick="nextYT()" ${hasNext?"":"disabled"} style="background:none;border:none;color:${hasNext?"var(--acc)":"var(--mut)"};font-size:18px;cursor:pointer;padding:4px 8px;">›</button></div>`;}
 function nextYT(){if(ytIdx<ytVideos.length-1){ytIdx++;showYTVideo();}}
 function prevYT(){if(ytIdx>0){ytIdx--;showYTVideo();}}
-async function toggleYT(word){
-  const frame=document.getElementById("ytFrameEl");
-  const btn=document.getElementById("ytBtnEl");
-  if(!frame||!btn)return;
-  if(frame.style.display==="none"||!frame.style.display){
-    frame.style.display="block";
-    const div=document.getElementById("ytIframeEl");
-    if(!div.dataset.loaded||ytWord!==word){
-      div.dataset.loaded="1";
-      await loadYTVideos(word);
-    }
-    btn.textContent="✕ إغلاق المقطع";
-    btn.style.background="rgba(255,50,50,.2)";
-  }else{
-    frame.style.display="none";
-    btn.textContent="▶ شغّل مقطع يوتيوب";
-    btn.style.background="";
-  }
-}
-// جلب عدد الكلمات الكلي
+async function toggleYT(word){const frame=document.getElementById("ytFrameEl");const btn=document.getElementById("ytBtnEl");if(!frame||!btn)return;if(frame.style.display==="none"||!frame.style.display){frame.style.display="block";const div=document.getElementById("ytIframeEl");if(!div.dataset.loaded||ytWord!==word){div.dataset.loaded="1";await loadYTVideos(word);}btn.textContent="✕ إغلاق المقطع";btn.style.background="rgba(255,50,50,.2)";}else{frame.style.display="none";btn.textContent="▶ شغّل مقطع يوتيوب";btn.style.background="";}}
 let totalWordsCount=0;
-async function fetchTotalCount(){
-  try{
-    const lvlF=st.fLevel!=="الكل"?`&level=eq.${encodeURIComponent(st.fLevel)}`:"";
-    const catF=st.fCat!=="الكل"?`&cat=eq.${encodeURIComponent(st.fCat)}`:"";
-    const r=await fetch(SB_URL+"/rest/v1/words?select=id"+lvlF+catF,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"count=exact","Range":"0-0"}});
-    const cnt=r.headers.get("content-range");
-    if(cnt){totalWordsCount=parseInt(cnt.split("/")[1])||0;}
-  }catch(e){}
-}
-// مخزن الكلمات العشوائية
 let wordBuffer=[];
 let bufferFilling=false;
-
-// تعبئة المخزن باستخدام RPC get_random_words - عشوائية حقيقية من PostgreSQL
 async function fillBuffer(){
   if(bufferFilling)return;
   bufferFilling=true;
@@ -546,11 +473,7 @@ async function fillBuffer(){
     const body={p_limit:20};
     if(lvl)body.p_level=lvl;
     if(cat)body.p_cat=cat;
-    const r=await fetch(SB_URL+"/rest/v1/rpc/get_random_words",{
-      method:"POST",
-      headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-      body:JSON.stringify(body)
-    });
+    const r=await fetch(SB_URL+"/rest/v1/rpc/get_random_words",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},body:JSON.stringify(body)});
     const data=await r.json();
     if(Array.isArray(data)&&data.length>0){
       const inBuffer=new Set(wordBuffer.map(w=>w.word.toLowerCase()));
@@ -560,8 +483,6 @@ async function fillBuffer(){
   }catch(e){}
   bufferFilling=false;
 }
-
-// جلب كلمة من المخزن فوراً
 async function fetchRandomWord(){
   if(wordBuffer.length===0) await fillBuffer();
   const currentWord=st.words[st.curIdx]?.word?.toLowerCase()||"";
@@ -573,16 +494,7 @@ async function fetchRandomWord(){
   if(wordBuffer.length<5) fillBuffer();
   return word;
 }
-
-async function fetchWords(){
-  // جلب أول كلمة عشوائية لعرضها
-  const w=await fetchRandomWord();
-  if(w){
-    if(!st.words.find(x=>x.word===w.word))st.words.push(w);
-    st.curIdx=st.words.length-1;
-    save();drawHome();updCnt();
-  }
-}
+async function fetchWords(){const w=await fetchRandomWord();if(w){if(!st.words.find(x=>x.word===w.word))st.words.push(w);st.curIdx=st.words.length-1;save();drawHome();updCnt();}}
 function initApp(){load();if(!st.dark)document.body.classList.add("light");updCnt();window.speechSynthesis?.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();if(st.words&&st.words.length>0){if(st.curIdx<0||st.curIdx>=st.words.length)st.curIdx=0;drawHome();}else{document.getElementById("homeDiv").innerHTML=`<div style="text-align:center;padding:60px 20px;"><div class="gen-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><p style="font-size:13px;color:var(--mut);margin-top:12px;">جاري تحميل الكلمات...</p></div>`;}fetchWords();setTimeout(()=>fillBuffer(),2000);if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}}
 load();
 if(!st.dark)document.body.classList.add("light");
