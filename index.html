@@ -33,7 +33,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .auth-tagline{font-size:20px;font-weight:400;color:rgba(255,255,255,.7);line-height:1.4;margin-bottom:0;text-align:left;}
 .auth-tagline strong{color:#fff;font-weight:700;}
 .auth-bottom{position:relative;z-index:2;padding:0 20px calc(32px + var(--safe-bot));background:linear-gradient(to top,#000 60%,transparent);}
-.auth-box{width:100%;background:rgba(15,15,15,.85);border-radius:20px;padding:20px;backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.07);margin-bottom:12px;}
+.auth-box{width:100%;background:none;border:none;padding:0;margin-bottom:12px;}
 .auth-tabs{display:flex;background:rgba(255,255,255,.06);border-radius:10px;padding:3px;margin-bottom:16px;gap:3px;}
 .auth-tab{flex:1;padding:8px;border:none;background:none;border-radius:8px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;color:rgba(255,255,255,.4);cursor:pointer;transition:all .2s;}
 .auth-tab.on{background:var(--acc);color:#fff;}
@@ -44,11 +44,11 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .auth-err{font-size:12px;color:var(--red);text-align:center;margin-top:8px;min-height:16px;}
 .auth-ok{font-size:12px;color:var(--grn);text-align:center;margin-top:8px;min-height:16px;}
 .auth-skip{width:100%;background:none;border:none;color:rgba(255,255,255,.35);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;padding:10px;text-align:center;}
-.social-btn{width:100%;padding:13px 16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;transition:background .2s;}
-.social-btn:hover{background:rgba(255,255,255,.14);}
-.social-btn-email{background:rgba(139,58,158,.15);border-color:rgba(139,58,158,.3);}
-.auth-divider{display:flex;align-items:center;gap:10px;margin:4px 0 12px;color:rgba(255,255,255,.25);font-size:12px;}
-.auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.1);}
+.social-btn{width:100%;padding:15px 16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:50px;color:#fff;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;transition:background .2s;}
+.social-btn:active{background:rgba(255,255,255,.12);}
+.social-btn-email{background:var(--acc);border-color:var(--acc);font-size:15px;font-weight:700;box-shadow:0 4px 20px rgba(139,58,158,.5);}
+.social-btn-email:active{background:#7a2d8e;}
+.auth-divider{display:none;}
 .header{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;z-index:50;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);border-bottom:1px solid #1a1a1a;padding:calc(10px + var(--safe-top)) 16px 10px;display:flex;align-items:center;justify-content:space-between;transition:transform .3s ease;}
 .logo-en{font-family:'Playfair Display',serif;font-style:italic;font-size:22px;color:var(--acc);line-height:1;}
 .logo-sub{font-size:10px;color:var(--mut);letter-spacing:1px;}
@@ -184,19 +184,18 @@ body.light .auth-box{background:rgba(255,255,255,.95);}
   <div class="auth-bottom">
     <!-- Social Login Buttons -->
     <div id="authMain">
+      <button class="social-btn social-btn-email" onclick="showEmailAuth()">
+        <span>متابعة بالإيميل</span>
+      </button>
       <button class="social-btn" onclick="signInWithApple()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-        <span>تسجيل بـ Apple</span>
+        <span>متابعة بـ Apple</span>
       </button>
       <button class="social-btn" onclick="signInWithGoogle()">
         <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-        <span>تسجيل بـ Google</span>
+        <span>متابعة بـ Google</span>
       </button>
-      <div class="auth-divider"><span>أو بالإيميل</span></div>
-      <button class="social-btn social-btn-email" onclick="showEmailAuth()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        <span>تسجيل بالإيميل</span>
-      </button>
+      <p style="font-size:11px;color:rgba(255,255,255,.25);text-align:center;margin-top:14px;line-height:1.6;">بالمتابعة أنت توافق على <span style="color:var(--acc2);">شروط الاستخدام</span> و<span style="color:var(--acc2);">سياسة الخصوصية</span></p>
     </div>
 
     <!-- Email Auth Form (hidden by default) -->
