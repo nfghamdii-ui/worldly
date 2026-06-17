@@ -531,19 +531,17 @@ async function fetchRandomWord(){
     const total=cnt?parseInt(cnt.split("/")[1]):0;
     if(!total)return null;
     totalWordsCount=total;
-    // تجنب تكرار آخر 5 كلمات
-    const recentWords=st.words.slice(-5).map(w=>w.word.toLowerCase());
+    // الكلمة الحالية فقط نتجنبها
+    const currentWord=st.words[st.curIdx]?.word?.toLowerCase()||"";
     let word=null;
     let tries=0;
-    while(tries<5){
+    while(tries<8){
       const offset=Math.floor(Math.random()*total);
       const r=await fetch(SB_URL+"/rest/v1/words?select=*"+lvlF+catF+`&offset=${offset}&limit=1`,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
       const data=await r.json();
-      if(data&&data.length>0){
-        if(!recentWords.includes(data[0].word.toLowerCase())){
-          word=data[0];
-          break;
-        }
+      if(data&&data.length>0&&data[0].word.toLowerCase()!==currentWord){
+        word=data[0];
+        break;
       }
       tries++;
     }
