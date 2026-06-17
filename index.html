@@ -520,65 +520,46 @@ async function fetchTotalCount(){
     if(cnt){totalWordsCount=parseInt(cnt.split("/")[1])||0;}
   }catch(e){}
 }
-// مخزن 20 كلمة عشوائية
+// مخزن الكلمات العشوائية
 let wordBuffer=[];
 let bufferFilling=false;
 
-// جلب كلمة واحدة عشوائية وإضافتها للمخزن
-async function fillOneWord(){
-  try{
-    const lvlF=st.fLevel!=="الكل"?`&level=eq.${encodeURIComponent(st.fLevel)}`:"";
-    const catF=st.fCat!=="الكل"?`&cat=eq.${encodeURIComponent(st.fCat)}`:"";
-    if(!totalWordsCount){
-      const countR=await fetch(SB_URL+"/rest/v1/words?select=id"+lvlF+catF,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"count=exact","Range":"0-0"}});
-      const cnt=countR.headers.get("content-range");
-      totalWordsCount=cnt?parseInt(cnt.split("/")[1]):0;
-    }
-    if(!totalWordsCount)return;
-    const offset=Math.floor(Math.random()*totalWordsCount);
-    const r=await fetch(SB_URL+"/rest/v1/words?select=*"+lvlF+catF+`&offset=${offset}&limit=1`,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
-    const data=await r.json();
-    if(data&&data.length>0){
-      const w=data[0];
-      // لا نضيف كلمة موجودة في المخزن
-      if(!wordBuffer.find(x=>x.word===w.word)){
-        wordBuffer.push(w);
-      }
-    }
-  }catch(e){}
-}
-
-// تعبئة المخزن حتى 20 كلمة في الخلفية
+// تعبئة المخزن - يجيب كلمات عشوائية حقيقية بـ order=random
 async function fillBuffer(){
   if(bufferFilling)return;
   bufferFilling=true;
-  const needed=20-wordBuffer.length;
-  for(let i=0;i<needed;i++){
-    await fillOneWord();
-  }
+  try{
+    const lvlF=st.fLevel!=="الكل"?`&level=eq.${encodeURIComponent(st.fLevel)}`:"";
+    const catF=st.fCat!=="الكل"?`&cat=eq.${encodeURIComponent(st.fCat)}`:"";
+    // جلب 20 كلمة عشوائية دفعة وحدة - الأسرع والأكثر تنوعاً
+    const r=await fetch(SB_URL+"/rest/v1/words?select=*"+lvlF+catF+"&order=id&limit=20&offset="+Math.floor(Math.random()*Math.max(1,(totalWordsCount||700)-20)),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+    const data=await r.json();
+    if(data&&data.length>0){
+      // خلط الكلمات لضمان التنوع
+      const shuffled=[...data].sort(()=>Math.random()-0.5);
+      const inBuffer=new Set(wordBuffer.map(w=>w.word.toLowerCase()));
+      shuffled.filter(w=>w&&!inBuffer.has(w.word.toLowerCase())).forEach(w=>{wordBuffer.push(w);});
+      // احفظ العدد الكلي
+      if(!totalWordsCount) totalWordsCount=700;
+    }
+  }catch(e){}
   bufferFilling=false;
 }
 
-// جلب كلمة من المخزن فوراً + تعبئة الخلفية
+// جلب كلمة من المخزن فوراً
 async function fetchRandomWord(){
-  // لو المخزن فاضي، انتظر التعبئة
-  if(wordBuffer.length===0){
-    await fillBuffer();
-  }
-  // اخذ كلمة مختلفة عن الحالية
+  if(wordBuffer.length===0) await fillBuffer();
   const currentWord=st.words[st.curIdx]?.word?.toLowerCase()||"";
   let word=null;
   for(let i=0;i<wordBuffer.length;i++){
-    if(wordBuffer[i].word.toLowerCase()!==currentWord){
-      word=wordBuffer.splice(i,1)[0];
-      break;
-    }
+    if(wordBuffer[i].word.toLowerCase()!==currentWord){word=wordBuffer.splice(i,1)[0];break;}
   }
   if(!word&&wordBuffer.length>0) word=wordBuffer.shift();
-  // عوّض الكلمة اللي أخذناها في الخلفية
-  fillOneWord();
+  // أعد تعبئة المخزن في الخلفية
+  if(wordBuffer.length<5) fillBuffer();
   return word;
 }
+
 async function fetchWords(){
   // جلب أول كلمة عشوائية لعرضها
   const w=await fetchRandomWord();
