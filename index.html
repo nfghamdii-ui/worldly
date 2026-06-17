@@ -520,53 +520,64 @@ async function fetchTotalCount(){
     if(cnt){totalWordsCount=parseInt(cnt.split("/")[1])||0;}
   }catch(e){}
 }
-// مخزن مؤقت للكلمات العشوائية
+// مخزن 20 كلمة عشوائية
 let wordBuffer=[];
-// جلب كلمة عشوائية من المخزن
-async function fetchRandomWord(){
+let bufferFilling=false;
+
+// جلب كلمة واحدة عشوائية وإضافتها للمخزن
+async function fillOneWord(){
   try{
     const lvlF=st.fLevel!=="الكل"?`&level=eq.${encodeURIComponent(st.fLevel)}`:"";
     const catF=st.fCat!=="الكل"?`&cat=eq.${encodeURIComponent(st.fCat)}`:"";
-    // إذا المخزن فاضي، اجلب 10 كلمات بـ offsets مختلفة
-    if(wordBuffer.length===0){
+    if(!totalWordsCount){
       const countR=await fetch(SB_URL+"/rest/v1/words?select=id"+lvlF+catF,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"count=exact","Range":"0-0"}});
       const cnt=countR.headers.get("content-range");
-      const total=cnt?parseInt(cnt.split("/")[1]):0;
-      if(!total)return null;
-      totalWordsCount=total;
-      // جلب 10 كلمات بـ offsets عشوائية مختلفة
-      const offsets=new Set();
-      while(offsets.size<Math.min(10,total)){
-        offsets.add(Math.floor(Math.random()*total));
-      }
-      const fetches=Array.from(offsets).map(offset=>
-        fetch(SB_URL+"/rest/v1/words?select=*"+lvlF+catF+`&offset=${offset}&limit=1`,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}})
-        .then(r=>r.json()).then(d=>d[0]).catch(()=>null)
-      );
-      const results=await Promise.all(fetches);
-      wordBuffer=results.filter(w=>w!=null);
-      // خلط البuffer
-      for(let i=wordBuffer.length-1;i>0;i--){
-        const j=Math.floor(Math.random()*(i+1));
-        [wordBuffer[i],wordBuffer[j]]=[wordBuffer[j],wordBuffer[i]];
+      totalWordsCount=cnt?parseInt(cnt.split("/")[1]):0;
+    }
+    if(!totalWordsCount)return;
+    const offset=Math.floor(Math.random()*totalWordsCount);
+    const r=await fetch(SB_URL+"/rest/v1/words?select=*"+lvlF+catF+`&offset=${offset}&limit=1`,{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+    const data=await r.json();
+    if(data&&data.length>0){
+      const w=data[0];
+      // لا نضيف كلمة موجودة في المخزن
+      if(!wordBuffer.find(x=>x.word===w.word)){
+        wordBuffer.push(w);
       }
     }
-    // إخراج كلمة من المخزن وتجنب الكلمة الحالية
-    const currentWord=st.words[st.curIdx]?.word?.toLowerCase()||"";
-    let word=null;
-    for(let i=0;i<wordBuffer.length;i++){
-      if(wordBuffer[i].word.toLowerCase()!==currentWord){
-        word=wordBuffer.splice(i,1)[0];
-        break;
-      }
-    }
-    // لو كل الكلمات نفس الكلمة الحالية
-    if(!word&&wordBuffer.length>0){
-      word=wordBuffer.shift();
-    }
-    return word;
   }catch(e){}
-  return null;
+}
+
+// تعبئة المخزن حتى 20 كلمة في الخلفية
+async function fillBuffer(){
+  if(bufferFilling)return;
+  bufferFilling=true;
+  const needed=20-wordBuffer.length;
+  for(let i=0;i<needed;i++){
+    await fillOneWord();
+  }
+  bufferFilling=false;
+}
+
+// جلب كلمة من المخزن فوراً + تعبئة الخلفية
+async function fetchRandomWord(){
+  // لو المخزن فاضي، انتظر التعبئة
+  if(wordBuffer.length===0){
+    await fillBuffer();
+  }
+  // اخذ كلمة مختلفة عن الحالية
+  const currentWord=st.words[st.curIdx]?.word?.toLowerCase()||"";
+  let word=null;
+  for(let i=0;i<wordBuffer.length;i++){
+    if(wordBuffer[i].word.toLowerCase()!==currentWord){
+      word=wordBuffer.splice(i,1)[0];
+      break;
+    }
+  }
+  if(!word&&wordBuffer.length>0) word=wordBuffer.shift();
+  // عوّض الكلمة اللي أخذناها في الخلفية
+  fillOneWord();
+  return word;
 }
 async function fetchWords(){
   // جلب أول كلمة عشوائية لعرضها
@@ -577,7 +588,7 @@ async function fetchWords(){
     save();drawHome();updCnt();
   }
 }
-function initApp(){load();if(!st.dark)document.body.classList.add("light");updCnt();window.speechSynthesis?.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();if(st.words&&st.words.length>0){if(st.curIdx<0||st.curIdx>=st.words.length)st.curIdx=0;drawHome();}else{document.getElementById("homeDiv").innerHTML=`<div style="text-align:center;padding:60px 20px;"><div class="gen-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><p style="font-size:13px;color:var(--mut);margin-top:12px;">جاري تحميل الكلمات...</p></div>`;}fetchWords();if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}}
+function initApp(){load();if(!st.dark)document.body.classList.add("light");updCnt();window.speechSynthesis?.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();if(st.words&&st.words.length>0){if(st.curIdx<0||st.curIdx>=st.words.length)st.curIdx=0;drawHome();}else{document.getElementById("homeDiv").innerHTML=`<div style="text-align:center;padding:60px 20px;"><div class="gen-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><p style="font-size:13px;color:var(--mut);margin-top:12px;">جاري تحميل الكلمات...</p></div>`;}fetchWords();setTimeout(()=>fillBuffer(),2000);if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}}
 load();
 if(!st.dark)document.body.classList.add("light");
 const savedToken=localStorage.getItem("qulex_token");
