@@ -524,23 +524,26 @@ async function fetchTotalCount(){
 let wordBuffer=[];
 let bufferFilling=false;
 
-// تعبئة المخزن - يجيب كلمات عشوائية حقيقية بـ order=random
+// تعبئة المخزن باستخدام RPC get_random_words - عشوائية حقيقية من PostgreSQL
 async function fillBuffer(){
   if(bufferFilling)return;
   bufferFilling=true;
   try{
-    const lvlF=st.fLevel!=="الكل"?`&level=eq.${encodeURIComponent(st.fLevel)}`:"";
-    const catF=st.fCat!=="الكل"?`&cat=eq.${encodeURIComponent(st.fCat)}`:"";
-    // جلب 20 كلمة عشوائية دفعة وحدة - الأسرع والأكثر تنوعاً
-    const r=await fetch(SB_URL+"/rest/v1/words?select=*"+lvlF+catF+"&order=id&limit=20&offset="+Math.floor(Math.random()*Math.max(1,(totalWordsCount||700)-20)),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+    const lvl=st.fLevel!=="الكل"?st.fLevel:null;
+    const cat=st.fCat!=="الكل"?st.fCat:null;
+    const body={p_limit:20};
+    if(lvl)body.p_level=lvl;
+    if(cat)body.p_cat=cat;
+    const r=await fetch(SB_URL+"/rest/v1/rpc/get_random_words",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+      body:JSON.stringify(body)
+    });
     const data=await r.json();
-    if(data&&data.length>0){
-      // خلط الكلمات لضمان التنوع
-      const shuffled=[...data].sort(()=>Math.random()-0.5);
+    if(Array.isArray(data)&&data.length>0){
       const inBuffer=new Set(wordBuffer.map(w=>w.word.toLowerCase()));
-      shuffled.filter(w=>w&&!inBuffer.has(w.word.toLowerCase())).forEach(w=>{wordBuffer.push(w);});
-      // احفظ العدد الكلي
-      if(!totalWordsCount) totalWordsCount=700;
+      data.filter(w=>w&&!inBuffer.has(w.word.toLowerCase())).forEach(w=>{wordBuffer.push(w);});
+      if(!totalWordsCount)totalWordsCount=data.length>0?700:0;
     }
   }catch(e){}
   bufferFilling=false;
@@ -555,7 +558,6 @@ async function fetchRandomWord(){
     if(wordBuffer[i].word.toLowerCase()!==currentWord){word=wordBuffer.splice(i,1)[0];break;}
   }
   if(!word&&wordBuffer.length>0) word=wordBuffer.shift();
-  // أعد تعبئة المخزن في الخلفية
   if(wordBuffer.length<5) fillBuffer();
   return word;
 }
