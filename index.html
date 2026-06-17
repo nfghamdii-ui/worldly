@@ -5,31 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="Qulex"/>
+<meta name="apple-mobile-web-app-title" content="MARS"/>
 <meta name="theme-color" content="#8b3a9e"/>
 <link rel="manifest" href="/manifest.json"/>
 <link rel="apple-touch-icon" href="/icon-192.png"/>
-<title>Qulex — تعلم الإنجليزية</title>
+<title>MARS — تعلم الإنجليزية</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{--bg:#000000;--surf:#0f0f0f;--surf2:#1a1a1a;--acc:#8b3a9e;--acc2:#c47abf;--grn:#3ec87a;--red:#e05555;--txt:#ebebf5;--mut:#666680;--safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);}
 body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-height:100vh;overflow-x:hidden;}
 .app{max-width:460px;margin:0 auto;min-height:100vh;}
-.auth-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at top,#1a0828 0%,#000 60%);}
-.auth-icon{width:72px;height:72px;background:linear-gradient(135deg,var(--acc),var(--acc2));border-radius:22px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 8px 32px rgba(139,58,158,.4);}
-.auth-icon svg{width:38px;height:38px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.auth-logo{font-family:'Playfair Display',serif;font-style:italic;font-size:44px;color:#fff;margin-bottom:6px;line-height:1;}
-.auth-sub{font-size:12px;color:var(--mut);margin-bottom:36px;letter-spacing:1.5px;}
-.auth-box{width:100%;max-width:380px;background:rgba(15,15,15,.9);border-radius:24px;padding:28px 24px;backdrop-filter:blur(20px);}
-.auth-tabs{display:flex;background:var(--surf2);border-radius:12px;padding:4px;margin-bottom:24px;}
-.auth-tab{flex:1;padding:8px;border:none;background:none;border-radius:8px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:600;color:var(--mut);cursor:pointer;transition:all .2s;}
+/* AUTH SCREEN - Full splash style */
+.auth-screen{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden;background:#000;}
+.auth-bg{position:absolute;inset:0;background:linear-gradient(160deg,#0d0015 0%,#1a0030 40%,#2d0050 70%,#000 100%);z-index:0;}
+.auth-bg::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(139,58,158,.5) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(196,122,191,.3) 0%,transparent 50%);z-index:1;}
+.auth-particles{position:absolute;inset:0;z-index:1;overflow:hidden;}
+.auth-particles span{position:absolute;width:2px;height:2px;background:#c47abf;border-radius:50%;animation:float linear infinite;opacity:.6;}
+@keyframes float{0%{transform:translateY(100vh) scale(0);}100%{transform:translateY(-10px) scale(1);opacity:0;}}
+.auth-top{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 28px 32px;}
+.auth-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(139,58,158,.2);border:1px solid rgba(196,122,191,.3);border-radius:20px;padding:5px 12px;margin-bottom:20px;backdrop-filter:blur(10px);}
+.auth-badge-dot{width:6px;height:6px;background:var(--acc2);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.auth-badge span{font-size:11px;color:var(--acc2);font-weight:600;letter-spacing:.5px;}
+.auth-logo{font-family:'Playfair Display',serif;font-size:72px;font-weight:700;color:#fff;line-height:1;margin-bottom:12px;letter-spacing:-3px;}
+.auth-logo span{color:var(--acc2);}
+.auth-tagline{font-size:20px;font-weight:400;color:rgba(255,255,255,.7);line-height:1.4;margin-bottom:0;}
+.auth-tagline strong{color:#fff;font-weight:700;}
+.auth-bottom{position:relative;z-index:2;padding:0 20px calc(32px + var(--safe-bot));background:linear-gradient(to top,#000 60%,transparent);}
+.auth-box{width:100%;background:rgba(15,15,15,.85);border-radius:20px;padding:20px;backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.07);margin-bottom:12px;}
+.auth-tabs{display:flex;background:rgba(255,255,255,.06);border-radius:10px;padding:3px;margin-bottom:16px;gap:3px;}
+.auth-tab{flex:1;padding:8px;border:none;background:none;border-radius:8px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;color:rgba(255,255,255,.4);cursor:pointer;transition:all .2s;}
 .auth-tab.on{background:var(--acc);color:#fff;}
-.auth-inp{width:100%;background:var(--surf2);border:none;border-radius:10px;color:var(--txt);font-family:'Tajawal',sans-serif;font-size:14px;padding:13px 14px;outline:none;margin-bottom:10px;direction:ltr;text-align:left;}
-.auth-inp::placeholder{color:var(--mut);direction:rtl;text-align:right;}
-.auth-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--acc),#a044b8);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 4px 16px rgba(139,58,158,.3);}
-.auth-err{font-size:12px;color:var(--red);text-align:center;margin-top:10px;min-height:18px;}
-.auth-ok{font-size:12px;color:var(--grn);text-align:center;margin-top:10px;min-height:18px;}
+.auth-inp{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;padding:12px 14px;outline:none;margin-bottom:8px;direction:ltr;text-align:left;transition:border-color .2s;}
+.auth-inp:focus{border-color:var(--acc2);}
+.auth-inp::placeholder{color:rgba(255,255,255,.3);direction:rtl;text-align:right;}
+.auth-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--acc),#c044d8);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px;box-shadow:0 4px 24px rgba(139,58,158,.5);letter-spacing:.5px;}
+.auth-err{font-size:12px;color:var(--red);text-align:center;margin-top:8px;min-height:16px;}
+.auth-ok{font-size:12px;color:var(--grn);text-align:center;margin-top:8px;min-height:16px;}
+.auth-skip{width:100%;background:none;border:none;color:rgba(255,255,255,.35);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;padding:10px;text-align:center;}
 .header{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;z-index:50;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);border-bottom:1px solid #1a1a1a;padding:calc(10px + var(--safe-top)) 16px 10px;display:flex;align-items:center;justify-content:space-between;transition:transform .3s ease;}
 .logo-en{font-family:'Playfair Display',serif;font-style:italic;font-size:22px;color:var(--acc);line-height:1;}
 .logo-sub{font-size:10px;color:var(--mut);letter-spacing:1px;}
@@ -153,25 +167,31 @@ body.light .auth-box{background:rgba(255,255,255,.95);}
 <body>
 <div class="app">
 <div id="authScreen" class="auth-screen" style="display:none;">
-  <div class="auth-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
-  <div class="auth-logo">Qulex</div>
-  <div class="auth-sub">تعلم الإنجليزية · RQN</div>
-  <div class="auth-box">
-    <div class="auth-tabs">
-      <button class="auth-tab on" onclick="switchAuth('login')">دخول</button>
-      <button class="auth-tab" onclick="switchAuth('register')">حساب جديد</button>
+  <div class="auth-bg"></div>
+  <div class="auth-particles" id="authParticles"></div>
+  <div class="auth-top">
+    <div class="auth-badge"><div class="auth-badge-dot"></div><span>تعلم الإنجليزية · RQN</span></div>
+    <div class="auth-logo">MARS<span>.</span></div>
+    <div class="auth-tagline">مارس <strong>إنجليزيتك</strong><br/>كل يوم كلمة جديدة</div>
+  </div>
+  <div class="auth-bottom">
+    <div class="auth-box">
+      <div class="auth-tabs">
+        <button class="auth-tab on" onclick="switchAuth('login')">دخول</button>
+        <button class="auth-tab" onclick="switchAuth('register')">حساب جديد</button>
+      </div>
+      <input class="auth-inp" id="authEmail" type="email" placeholder="الإيميل" autocomplete="email"/>
+      <input class="auth-inp" id="authPass" type="password" placeholder="كلمة المرور" autocomplete="current-password"/>
+      <div id="authName" style="display:none;"><input class="auth-inp" id="authNameInp" type="text" placeholder="اسمك (اختياري)" autocomplete="name"/></div>
+      <button class="auth-btn" id="authBtn" onclick="doAuth()">دخول</button>
+      <div id="authMsg" class="auth-err"></div>
     </div>
-    <input class="auth-inp" id="authEmail" type="email" placeholder="الإيميل" autocomplete="email"/>
-    <input class="auth-inp" id="authPass" type="password" placeholder="كلمة المرور" autocomplete="current-password"/>
-    <div id="authName" style="display:none;"><input class="auth-inp" id="authNameInp" type="text" placeholder="اسمك (اختياري)" autocomplete="name"/></div>
-    <button class="auth-btn" id="authBtn" onclick="doAuth()">دخول</button>
-    <div id="authMsg" class="auth-err"></div>
-    <button onclick="skipAuth()" style="width:100%;background:none;border:none;color:var(--mut);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;margin-top:16px;padding:8px;">تصفح بدون حساب</button>
+    <button onclick="skipAuth()" class="auth-skip">تصفح بدون حساب</button>
   </div>
 </div>
 <div id="mainApp" style="display:none;">
 <div class="header">
-  <div><div class="logo-en">Qulex</div><div class="logo-sub">تعلم الإنجليزية · RQN</div></div>
+  <div><div class="logo-en">MARS</div><div class="logo-sub">تعلم الإنجليزية · RQN</div></div>
   <div class="header-right">
     <div class="streak-badge" id="streakBadge">🔥 <span id="streakNum">1</span></div>
     <div class="user-avatar" id="userAvatar" onclick="go('stats')">؟</div>
@@ -249,7 +269,7 @@ async function syncSaveToCloud(word,remove=false){
   else{const w=st.saved.find(s=>s.word===word);if(!w)return;await fetch(SB_URL+"/rest/v1/user_saves",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+authToken,"Prefer":"resolution=merge-duplicates"},body:JSON.stringify({user_id:currentUser.id,word,data:w})});}
 }
 async function doSignOut(){if(authToken){await fetch(SB_URL+"/auth/v1/logout",{method:"POST",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+authToken}}).catch(()=>{});}localStorage.removeItem("qulex_token");localStorage.removeItem("qulex_user");currentUser=null;authToken=null;document.getElementById("mainApp").style.display="none";document.getElementById("authScreen").style.display="flex";}
-function showApp(){document.getElementById("authScreen").style.display="none";document.getElementById("mainApp").style.display="block";initApp();}
+function showApp(){initParticles();document.getElementById("authScreen").style.display="none";document.getElementById("mainApp").style.display="block";initApp();}
 function load(){try{const s=JSON.parse(localStorage.getItem("qulex_pwa")||"{}");st={...st,...s};const today=new Date().toDateString();const yest=new Date(Date.now()-86400000).toDateString();if(st.lastVisit===today){}else if(st.lastVisit===yest)st.streak=(st.streak||0)+1;else st.streak=1;st.lastVisit=today;if(st.dailyDate!==today){st.dailyCount=0;st.dailyDate=today;}}catch(e){}}
 function save(){localStorage.setItem("qulex_pwa",JSON.stringify(st));}
 function updHeader(){const el=document.getElementById("streakNum");if(el)el.textContent=st.streak;const av=document.getElementById("userAvatar");if(av){if(currentUser?.email){av.textContent=currentUser.email[0].toUpperCase();av.title=currentUser.email;}else av.textContent="👤";}}
@@ -435,7 +455,7 @@ function startWritingQuiz(){wqList=shuffle(st.saved).slice(0,8);wqTotal=wqList.l
 function startQuiz(){st.quizzes++;save();const sel=shuffle(st.saved).slice(0,8);qqs=sel.map(word=>{const eToA=Math.random()>.5;const pool=st.words.filter(w=>w.word!==word.word);const wr=shuffle(pool).slice(0,3);const ci=Math.floor(Math.random()*4);const opts=[];let wi=0;for(let i=0;i<4;i++){if(i===ci)opts.push(eToA?word.arabic:word.word);else opts.push(eToA?wr[wi]?.arabic||"—":wr[wi]?.word||"—");wi++;}return{question:eToA?`ما معنى "${word.word}" بالعربي؟`:`ما الكلمة الإنجليزية لـ "${word.arabic}"؟`,options:opts,correct:ci};});qcur=0;qsc=0;qsel=null;qdone=false;drawQuiz();}
 function ansQ(idx){if(qsel!==null)return;qsel=idx;document.querySelectorAll(".qopt").forEach((b,i)=>{b.disabled=true;if(i===qqs[qcur].correct)b.classList.add("ok");else if(i===idx)b.classList.add("no");});if(idx===qqs[qcur].correct)qsc++;setTimeout(()=>{qcur++;qsel=null;if(qcur>=qqs.length){const pct=Math.round((qsc/qqs.length)*100);if(pct>st.best){st.best=pct;save();}qdone=true;}drawQuiz();},900);}
 function resetQuiz(){qqs=[];qcur=0;qsc=0;qsel=null;qdone=false;drawQuiz();}
-function drawStats(){const isLoggedIn=!!currentUser;const userEmail=currentUser?.email||"";const badges=[{icon:"⭐",label:"نجم ناشئ",desc:"5 كلمات",ok:st.saved.length>=5},{icon:"🌟",label:"متعلم جاد",desc:"10 كلمات",ok:st.saved.length>=10},{icon:"📐",label:"قواعدي",desc:"كلمة بقاعدة",ok:st.words.some(w=>w.grammar)},{icon:"🧠",label:"أول اختبار",desc:"أكمل اختباراً",ok:st.quizzes>=1},{icon:"🏆",label:"متفوق",desc:"80%+",ok:st.best>=80},{icon:"🔥",label:"ثابت",desc:"3 أيام متتالية",ok:st.streak>=3},{icon:"💫",label:"محترف",desc:"20 كلمة",ok:st.saved.length>=20},{icon:"🎯",label:"مثالي",desc:"100%",ok:st.best===100}];document.getElementById("statsDiv").innerHTML=`${isLoggedIn?`<div class="card" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:38px;height:38px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;">${userEmail[0]?.toUpperCase()||"Q"}</div><div><div style="font-size:13px;font-weight:700">${userEmail}</div><div style="font-size:11px;color:var(--grn);margin-top:2px">✓ بياناتك محفوظة على السحابة</div></div></div><button onclick="doSignOut()" style="background:rgba(224,85,85,.12);color:var(--red);border:none;border-radius:10px;padding:8px 14px;font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;">خروج</button></div>`:`<div class="card" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div><div style="font-size:13px;font-weight:700">👤 بدون حساب</div><div style="font-size:11px;color:var(--mut);margin-top:2px">البيانات محلية فقط</div></div><button onclick="doSignOut()" style="background:var(--acc);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;">تسجيل دخول</button></div>`}<div class="card" style="text-align:center;margin-bottom:8px"><div style="font-size:44px">🔥</div><div style="font-size:48px;font-weight:800;color:var(--acc);line-height:1">${st.streak}</div><div style="font-size:13px;color:var(--mut);margin-top:4px">يوم متتالي</div></div><div class="sgrid">${[{icon:"📚",label:"محفوظة",v:st.saved.length},{icon:"📖",label:"إجمالي الكلمات",v:st.words.length},{icon:"🧠",label:"اختبارات",v:st.quizzes},{icon:"🏆",label:"أعلى نتيجة",v:st.best+"%"}].map(s=>`<div class="scard"><div style="font-size:26px;margin-bottom:4px">${s.icon}</div><div style="font-size:26px;font-weight:800;color:var(--acc)">${s.v}</div><div style="font-size:10px;color:var(--mut);margin-top:2px">${s.label}</div></div>`).join("")}</div><div class="card"><div style="font-size:13px;font-weight:700;margin-bottom:12px">🏅 الإنجازات</div><div class="bgrid">${badges.map(b=>`<div class="bitem ${b.ok?"got":""}"><div style="font-size:26px;margin-bottom:3px">${b.icon}</div><div style="font-size:11px;font-weight:700;color:${b.ok?"var(--acc)":"var(--mut)"}">${b.label}</div><div style="font-size:10px;color:var(--mut);margin-top:1px">${b.desc}</div>${b.ok?`<div style="font-size:10px;color:var(--grn);margin-top:3px;font-weight:700">✓ محقق</div>`:""}</div>`).join("")}</div></div><div style="text-align:center;padding:20px 0 4px;margin-top:10px;"><p style="font-size:11px;color:var(--mut);">© ${new Date().getFullYear()} Qulex · Powered by <span style="color:var(--acc);font-weight:700;">RQN</span></p></div>`;}
+function drawStats(){const isLoggedIn=!!currentUser;const userEmail=currentUser?.email||"";const badges=[{icon:"⭐",label:"نجم ناشئ",desc:"5 كلمات",ok:st.saved.length>=5},{icon:"🌟",label:"متعلم جاد",desc:"10 كلمات",ok:st.saved.length>=10},{icon:"📐",label:"قواعدي",desc:"كلمة بقاعدة",ok:st.words.some(w=>w.grammar)},{icon:"🧠",label:"أول اختبار",desc:"أكمل اختباراً",ok:st.quizzes>=1},{icon:"🏆",label:"متفوق",desc:"80%+",ok:st.best>=80},{icon:"🔥",label:"ثابت",desc:"3 أيام متتالية",ok:st.streak>=3},{icon:"💫",label:"محترف",desc:"20 كلمة",ok:st.saved.length>=20},{icon:"🎯",label:"مثالي",desc:"100%",ok:st.best===100}];document.getElementById("statsDiv").innerHTML=`${isLoggedIn?`<div class="card" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:38px;height:38px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;">${userEmail[0]?.toUpperCase()||"Q"}</div><div><div style="font-size:13px;font-weight:700">${userEmail}</div><div style="font-size:11px;color:var(--grn);margin-top:2px">✓ بياناتك محفوظة على السحابة</div></div></div><button onclick="doSignOut()" style="background:rgba(224,85,85,.12);color:var(--red);border:none;border-radius:10px;padding:8px 14px;font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;">خروج</button></div>`:`<div class="card" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div><div style="font-size:13px;font-weight:700">👤 بدون حساب</div><div style="font-size:11px;color:var(--mut);margin-top:2px">البيانات محلية فقط</div></div><button onclick="doSignOut()" style="background:var(--acc);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;">تسجيل دخول</button></div>`}<div class="card" style="text-align:center;margin-bottom:8px"><div style="font-size:44px">🔥</div><div style="font-size:48px;font-weight:800;color:var(--acc);line-height:1">${st.streak}</div><div style="font-size:13px;color:var(--mut);margin-top:4px">يوم متتالي</div></div><div class="sgrid">${[{icon:"📚",label:"محفوظة",v:st.saved.length},{icon:"📖",label:"إجمالي الكلمات",v:st.words.length},{icon:"🧠",label:"اختبارات",v:st.quizzes},{icon:"🏆",label:"أعلى نتيجة",v:st.best+"%"}].map(s=>`<div class="scard"><div style="font-size:26px;margin-bottom:4px">${s.icon}</div><div style="font-size:26px;font-weight:800;color:var(--acc)">${s.v}</div><div style="font-size:10px;color:var(--mut);margin-top:2px">${s.label}</div></div>`).join("")}</div><div class="card"><div style="font-size:13px;font-weight:700;margin-bottom:12px">🏅 الإنجازات</div><div class="bgrid">${badges.map(b=>`<div class="bitem ${b.ok?"got":""}"><div style="font-size:26px;margin-bottom:3px">${b.icon}</div><div style="font-size:11px;font-weight:700;color:${b.ok?"var(--acc)":"var(--mut)"}">${b.label}</div><div style="font-size:10px;color:var(--mut);margin-top:1px">${b.desc}</div>${b.ok?`<div style="font-size:10px;color:var(--grn);margin-top:3px;font-weight:700">✓ محقق</div>`:""}</div>`).join("")}</div></div><div style="text-align:center;padding:20px 0 4px;margin-top:10px;"><p style="font-size:11px;color:var(--mut);">© ${new Date().getFullYear()} MARS · Powered by <span style="color:var(--acc);font-weight:700;">RQN</span></p></div>`;}
 function openFilt(){document.getElementById("lvlPills").innerHTML=LEVELS.map(l=>`<button class="pill" style="background:${st.fLevel===l?"var(--acc)":"none"};border-color:${st.fLevel===l?"var(--acc)":"#2a2a2a"};color:${st.fLevel===l?"#fff":"var(--txt)"}" onclick="setL('${l}')">${l}</button>`).join("");document.getElementById("catPills").innerHTML=CATS.map(c=>`<button class="pill" style="background:${st.fCat===c?"var(--acc2)":"none"};border-color:${st.fCat===c?"var(--acc2)":"#2a2a2a"};color:${st.fCat===c?"#fff":"var(--txt)"}" onclick="setC('${c}')">${c==="الكل"?"🌐 الكل":(CICO[c]||"")+" "+c}</button>`).join("");document.getElementById("fov").style.display="flex";}
 function closeFilt(){document.getElementById("fov").style.display="none";}
 function setL(l){st.fLevel=l;openFilt();}
@@ -495,12 +515,13 @@ async function fetchRandomWord(){
   return word;
 }
 async function fetchWords(){const w=await fetchRandomWord();if(w){if(!st.words.find(x=>x.word===w.word))st.words.push(w);st.curIdx=st.words.length-1;save();drawHome();updCnt();}}
+function initParticles(){const c=document.getElementById("authParticles");if(!c)return;for(let i=0;i<20;i++){const s=document.createElement("span");s.style.cssText=`left:${Math.random()*100}%;animation-duration:${4+Math.random()*8}s;animation-delay:${Math.random()*5}s;width:${1+Math.random()*3}px;height:${1+Math.random()*3}px;opacity:${.3+Math.random()*.5}`;c.appendChild(s);}}
 function initApp(){load();if(!st.dark)document.body.classList.add("light");updCnt();window.speechSynthesis?.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();if(st.words&&st.words.length>0){if(st.curIdx<0||st.curIdx>=st.words.length)st.curIdx=0;drawHome();}else{document.getElementById("homeDiv").innerHTML=`<div style="text-align:center;padding:60px 20px;"><div class="gen-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><p style="font-size:13px;color:var(--mut);margin-top:12px;">جاري تحميل الكلمات...</p></div>`;}fetchWords();setTimeout(()=>fillBuffer(),2000);if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}}
 load();
 if(!st.dark)document.body.classList.add("light");
 const savedToken=localStorage.getItem("qulex_token");
 const savedUser=localStorage.getItem("qulex_user");
-if(savedToken&&savedUser){try{authToken=savedToken;currentUser=JSON.parse(savedUser);fetch(SB_URL+"/auth/v1/user",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+authToken}}).then(r=>r.json()).then(async d=>{if(d.id){await loadUserSaves();showApp();}else{localStorage.removeItem("qulex_token");localStorage.removeItem("qulex_user");document.getElementById("authScreen").style.display="flex";}}).catch(()=>showApp());}catch(e){document.getElementById("authScreen").style.display="flex";}}else{document.getElementById("authScreen").style.display="flex";}
+if(savedToken&&savedUser){try{authToken=savedToken;currentUser=JSON.parse(savedUser);fetch(SB_URL+"/auth/v1/user",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+authToken}}).then(r=>r.json()).then(async d=>{if(d.id){await loadUserSaves();showApp();}else{localStorage.removeItem("qulex_token");localStorage.removeItem("qulex_user");document.getElementById("authScreen").style.display="flex";initParticles();}}).catch(()=>{showApp();});}catch(e){document.getElementById("authScreen").style.display="flex";initParticles();}}else{document.getElementById("authScreen").style.display="flex";initParticles();}
 </script>
 </body>
 </html>
