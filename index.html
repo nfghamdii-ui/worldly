@@ -16,7 +16,6 @@
 :root{--bg:#000000;--surf:#0f0f0f;--surf2:#1a1a1a;--acc:#8b3a9e;--acc2:#c47abf;--grn:#3ec87a;--red:#e05555;--txt:#ebebf5;--mut:#666680;--safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);}
 body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-height:100vh;overflow-x:hidden;}
 .app{max-width:460px;margin:0 auto;min-height:100vh;}
-/* AUTH SCREEN - Full splash style */
 .auth-screen{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden;background:#000;}
 .auth-bg{position:absolute;inset:0;background:linear-gradient(to bottom,#0a0018 0%,#080015 30%,#030008 60%,#000000 75%,#000000 100%);z-index:0;}
 .auth-bg::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 25% 15%,rgba(100,30,140,.25) 0%,transparent 55%),radial-gradient(ellipse at 80% 50%,rgba(20,50,180,.18) 0%,transparent 50%),radial-gradient(ellipse at 50% 85%,rgba(15,30,100,.12) 0%,transparent 40%);z-index:1;}
@@ -167,6 +166,26 @@ body.light .auth-box{background:rgba(255,255,255,.95);}
 .conj-row td{padding:8px 12px;font-size:13px;}
 .conj-row td:first-child{color:var(--mut);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;width:45%;text-align:right;}
 .conj-row td:last-child{color:var(--txt);direction:ltr;text-align:left;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;background:var(--surf2);border-radius:8px;cursor:pointer;}
+/* Grammar Screen Styles */
+.gl-level-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:12px;margin-bottom:12px;scrollbar-width:none;}
+.gl-level-tabs::-webkit-scrollbar{display:none;}
+.gl-level-tab{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid #2a2a2a;background:none;color:var(--mut);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+.gl-level-tab.on{background:var(--acc);color:#fff;border-color:var(--acc);}
+.gl-cat-card{background:var(--surf);border-radius:14px;margin-bottom:8px;overflow:hidden;}
+.gl-cat-head{width:100%;padding:16px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-family:'Tajawal',sans-serif;}
+.gl-cat-body{border-top:1px solid #1a1a1a;}
+.gl-lesson{padding:13px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);}
+.gl-lesson:last-child{border-bottom:none;}
+.gl-lesson:active{background:rgba(255,255,255,.04);}
+.gl-detail{position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto;animation:up .3s ease;}
+.gl-detail-header{position:sticky;top:0;background:var(--bg);padding:calc(16px + var(--safe-top)) 16px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #1a1a1a;z-index:1;}
+.gl-detail-body{padding:16px 16px calc(40px + var(--safe-bot));}
+.gl-rule-box{background:rgba(139,58,158,.1);border:1px solid rgba(139,58,158,.25);border-radius:12px;padding:14px 16px;margin-bottom:12px;font-size:14px;font-weight:700;color:var(--acc2);direction:ltr;text-align:left;}
+.gl-ex{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;margin-bottom:8px;direction:ltr;text-align:left;font-size:13px;}
+.gl-ex:last-child{margin-bottom:0;}
+.gl-ex-ok{background:rgba(62,200,122,.1);}
+.gl-ex-no{background:rgba(224,85,85,.1);}
+.gl-tip{background:rgba(139,58,158,.08);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--acc2);line-height:1.65;margin-top:12px;}
 </style>
 </head>
 <body>
@@ -175,14 +194,12 @@ body.light .auth-box{background:rgba(255,255,255,.95);}
   <div class="auth-bg"></div>
   <div class="auth-particles" id="authParticles"></div>
   <div class="auth-top">
-
     <div style="display:flex;align-items:flex-end;justify-content:space-between;width:100%;">
       <div class="auth-tagline" style="text-align:right;direction:rtl;padding-bottom:10px;">مارس <strong>إنجليزيتك</strong><br/>كل يوم كلمة جديدة</div>
       <div class="auth-logo" style="direction:ltr;">MARS<span style="color:var(--acc2);">.</span></div>
     </div>
   </div>
   <div class="auth-bottom">
-    <!-- Auth Main -->
     <div id="authMain">
       <div class="auth-tabs" style="margin-bottom:16px;">
         <button class="auth-tab" onclick="switchAuth('register')">إنشاء حساب</button>
@@ -203,8 +220,6 @@ body.light .auth-box{background:rgba(255,255,255,.95);}
       </button>
       <p style="font-size:11px;color:rgba(255,255,255,.2);text-align:center;margin-top:14px;line-height:1.6;">بالمتابعة أنت توافق على <span style="color:var(--acc2);">شروط الاستخدام</span> و<span style="color:var(--acc2);">سياسة الخصوصية</span></p>
     </div>
-
-    <!-- Email Auth Form (hidden, triggered by tabs) -->
     <div id="authEmailForm" style="display:none;">
       <div class="auth-tabs" style="margin-bottom:16px;">
         <button class="auth-tab" onclick="switchAuth('register')">إنشاء حساب</button>
@@ -311,33 +326,15 @@ async function spk(txt,rate=1){
   const btn=event?.currentTarget;
   if(btn&&btn.tagName==="BUTTON"){btn.textContent="⏳";btn.disabled=true;}
   try{
-    const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+EL_VOICE,{
-      method:"POST",
-      headers:{"Content-Type":"application/json","xi-api-key":EL_KEY},
-      body:JSON.stringify({text:txt,model_id:"eleven_multilingual_v2",voice_settings:{stability:0.5,similarity_boost:0.75}})
-    });
+    const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+EL_VOICE,{method:"POST",headers:{"Content-Type":"application/json","xi-api-key":EL_KEY},body:JSON.stringify({text:txt,model_id:"eleven_multilingual_v2",voice_settings:{stability:0.5,similarity_boost:0.75}})});
     if(!r.ok)throw new Error("EL failed");
-    const blob=await r.blob();
-    const url=URL.createObjectURL(blob);
-    const audio=new Audio(url);
-    audio.playbackRate=rate;
-    audio.play();
-    audio.onended=()=>URL.revokeObjectURL(url);
+    const blob=await r.blob();const url=URL.createObjectURL(blob);const audio=new Audio(url);audio.playbackRate=rate;audio.play();audio.onended=()=>URL.revokeObjectURL(url);
   }catch(e){
-    if(window.speechSynthesis){
-      window.speechSynthesis.cancel();
-      const u=new SpeechSynthesisUtterance(txt);
-      u.lang="en-US";u.rate=rate;
-      const vs=window.speechSynthesis.getVoices();
-      const v=vs.find(v=>v.lang.startsWith("en")&&v.localService)||vs.find(v=>v.lang.startsWith("en"));
-      if(v)u.voice=v;
-      window.speechSynthesis.speak(u);
-    }
+    if(window.speechSynthesis){window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.lang="en-US";u.rate=rate;const vs=window.speechSynthesis.getVoices();const v=vs.find(v=>v.lang.startsWith("en")&&v.localService)||vs.find(v=>v.lang.startsWith("en"));if(v)u.voice=v;window.speechSynthesis.speak(u);}
   }
   if(btn&&btn.tagName==="BUTTON"){btn.textContent="🔊 استمع";btn.disabled=false;}
 }
 function esc(s){return(s||"").replace(/'/g,"\\'").replace(/"/g,'\\"');}
-
 function wordHTML(w,opts={}){
   if(!w)return"";
   const saved=st.saved.some(s=>s.word===w.word);
@@ -376,16 +373,13 @@ function wordHTML(w,opts={}){
   <div class="card">
     <div class="lbl" style="margin-bottom:10px;">🎬 شوف الكلمة في جملة حقيقية</div>
     <button class="yt-btn" id="ytBtnEl" onclick="toggleYT('${esc(w.word)}')">▶ شغّل مقطع يوتيوب</button>
-    <div id="ytFrameEl" style="display:none;" class="yt-frame">
-      <div id="ytIframeEl" style="min-height:60px;"></div>
-    </div>
+    <div id="ytFrameEl" style="display:none;" class="yt-frame"><div id="ytIframeEl" style="min-height:60px;"></div></div>
   </div>
   ${w.grammar?`<div class="card" style="padding:0;overflow:hidden;"><button class="gram-head" onclick="toggleGram()"><span class="lbl" style="margin:0">📐 القاعدة النحوية</span><span style="font-size:13px;color:var(--acc2);font-weight:700;display:flex;align-items:center;gap:6px">${w.grammar.rule} <span id="garrw" style="font-size:10px;color:var(--mut)">▼</span></span></button><div class="gram-body" id="gramBody" style="display:none"><p style="font-size:13px;line-height:1.75;margin-bottom:14px;margin-top:12px">${w.grammar.explanation}</p><div class="gram-ex gram-ok"><span>✅</span><span style="color:var(--txt)">${w.grammar.correct}</span></div><div class="gram-ex gram-no"><span>❌</span><span style="color:var(--txt)">${w.grammar.wrong}</span></div><div class="gram-note" style="margin-top:10px">💡 ${w.grammar.tip}</div></div></div>`:""}
   <div class="card"><button class="tip-btn" id="tipBtnEl" onclick="toggleTip()">${tipOpen?"💡 إخفاء النصيحة":"💡 نصيحة لتذكر الكلمة"}</button><div class="tip-box" id="tipBoxEl" style="display:${tipOpen?"block":"none"}">${w.tip}</div></div>
   <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="lbl" style="margin:0">📝 ملاحظتي</span><button onclick="toggleNote('${esc(w.word)}')" style="background:none;border:none;color:var(--acc);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer" id="noteBtnEl">${noteEdit?"حفظ ✓":"تعديل ✏️"}</button></div><div id="noteDispEl" style="font-size:13px;color:${note?"var(--txt)":"var(--mut)"};line-height:1.6;min-height:30px;display:${noteEdit?"none":"block"}">${note||"لا توجد ملاحظة — اضغط تعديل"}</div><textarea id="noteInpEl" class="note-ta" style="display:${noteEdit?"block":"none"}">${note}</textarea></div>
   ${opts.del?`<button class="btn-d" onclick="delWord('${esc(w.word)}')">🗑 حذف من المكتبة</button>`:""}`;
 }
-
 function toggleTip(){tipOpen=!tipOpen;const b=document.getElementById("tipBtnEl");const d=document.getElementById("tipBoxEl");if(b)b.textContent=tipOpen?"💡 إخفاء النصيحة":"💡 نصيحة لتذكر الكلمة";if(d)d.style.display=tipOpen?"block":"none";}
 function toggleGram(){gramOpen=!gramOpen;const b=document.getElementById("gramBody");const a=document.getElementById("garrw");if(b)b.style.display=gramOpen?"block":"none";if(a)a.textContent=gramOpen?"▲":"▼";}
 function toggleNote(word){if(noteEdit){const v=document.getElementById("noteInpEl")?.value||"";st.notes[word]=v;save();const d=document.getElementById("noteDispEl");const i=document.getElementById("noteInpEl");const b=document.getElementById("noteBtnEl");if(d){d.style.display="block";d.textContent=v||"لا توجد ملاحظة — اضغط تعديل";d.style.color=v?"var(--txt)":"var(--mut)";}if(i)i.style.display="none";if(b)b.textContent="تعديل ✏️";noteEdit=false;}else{const d=document.getElementById("noteDispEl");const i=document.getElementById("noteInpEl");const b=document.getElementById("noteBtnEl");if(d)d.style.display="none";if(i){i.style.display="block";i.focus();}if(b)b.textContent="حفظ ✓";noteEdit=true;}}
@@ -403,18 +397,7 @@ function drawQuiz(){
   const d=document.getElementById("quizDiv");
   if(st.saved.length<3){d.innerHTML=`<div class="empty"><div style="font-size:44px">📚</div><p style="font-weight:700;margin-top:8px">تحتاج 3 كلمات على الأقل</p></div>`;return;}
   if(quizMode==="writing"){drawWritingQuiz();return;}
-  if(!qqs.length){
-    d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px">
-      <div class="quiz-mode-tabs" style="width:100%;max-width:280px;">
-        <button class="quiz-mode-tab on" onclick="setQuizMode('choice')">🔤 اختيار</button>
-        <button class="quiz-mode-tab" onclick="setQuizMode('writing')">✍️ كتابة</button>
-      </div>
-      <span style="font-size:56px">🧠</span>
-      <h2 style="font-size:20px;font-weight:800">اختبر معلوماتك</h2>
-      <p style="font-size:13px;color:var(--mut)">سيتم اختبارك على ${st.saved.length} كلمة</p>
-      <button onclick="startQuiz()" style="padding:13px 40px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">ابدأ الاختبار</button></div>`;
-    return;
-  }
+  if(!qqs.length){d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px"><div class="quiz-mode-tabs" style="width:100%;max-width:280px;"><button class="quiz-mode-tab on" onclick="setQuizMode('choice')">🔤 اختيار</button><button class="quiz-mode-tab" onclick="setQuizMode('writing')">✍️ كتابة</button></div><span style="font-size:56px">🧠</span><h2 style="font-size:20px;font-weight:800">اختبر معلوماتك</h2><p style="font-size:13px;color:var(--mut)">سيتم اختبارك على ${st.saved.length} كلمة</p><button onclick="startQuiz()" style="padding:13px 40px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">ابدأ الاختبار</button></div>`;return;}
   if(qdone){const pct=Math.round((qsc/qqs.length)*100);d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px"><div class="sring"><span style="font-size:28px;font-weight:800;color:var(--acc)">${pct}%</span></div><h2 style="font-size:20px;font-weight:800">${pct>=80?"ممتاز! 🎉":pct>=50?"جيد 👍":"استمر 💪"}</h2><p style="font-size:13px;color:var(--mut)">${qsc} من ${qqs.length} إجابة صحيحة</p><div style="display:flex;gap:10px"><button onclick="startQuiz()" style="padding:13px 28px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer">أعد الاختبار</button><button onclick="resetQuiz()" class="btn-s" style="padding:13px 24px">رجوع</button></div></div>`;return;}
   const q=qqs[qcur];
   let h=`<div class="prog"><div class="pfill" style="width:${(qcur/qqs.length)*100}%"></div></div><p style="font-size:11px;color:var(--mut);text-align:center;margin-bottom:12px">${qcur+1} من ${qqs.length}</p><div class="card" style="font-size:16px;font-weight:600;line-height:1.65;text-align:center;margin-bottom:12px">${q.question}</div>`;
@@ -424,59 +407,24 @@ function drawQuiz(){
 function setQuizMode(mode){quizMode=mode;qqs=[];wqList=[];wqDone=false;drawQuiz();}
 function drawWritingQuiz(){
   const d=document.getElementById("quizDiv");
-  if(!wqList.length){
-    d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px">
-      <div class="quiz-mode-tabs" style="width:100%;max-width:280px;">
-        <button class="quiz-mode-tab" onclick="setQuizMode('choice')">🔤 اختيار</button>
-        <button class="quiz-mode-tab on" onclick="setQuizMode('writing')">✍️ كتابة</button>
-      </div>
-      <span style="font-size:56px">✍️</span>
-      <h2 style="font-size:20px;font-weight:800">اختبار الكتابة</h2>
-      <p style="font-size:13px;color:var(--mut)">استمع للنطق واكتب الكلمة بالإنجليزية</p>
-      <button onclick="startWritingQuiz()" style="padding:13px 40px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">ابدأ ✍️</button></div>`;
-    return;
-  }
-  if(wqDone){
-    const pct=Math.round((wqSc/wqTotal)*100);
-    d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px"><div class="sring"><span style="font-size:28px;font-weight:800;color:var(--acc)">${pct}%</span></div><h2 style="font-size:20px;font-weight:800">${pct>=80?"ممتاز! 🎉":pct>=50?"جيد 👍":"استمر 💪"}</h2><p style="font-size:13px;color:var(--mut)">${wqSc} من ${wqTotal} إجابة صحيحة</p><div style="display:flex;gap:10px"><button onclick="startWritingQuiz()" style="padding:13px 28px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer">أعد</button><button onclick="setQuizMode('writing')" class="btn-s" style="padding:13px 24px">رجوع</button></div></div>`;
-    return;
-  }
+  if(!wqList.length){d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px"><div class="quiz-mode-tabs" style="width:100%;max-width:280px;"><button class="quiz-mode-tab" onclick="setQuizMode('choice')">🔤 اختيار</button><button class="quiz-mode-tab on" onclick="setQuizMode('writing')">✍️ كتابة</button></div><span style="font-size:56px">✍️</span><h2 style="font-size:20px;font-weight:800">اختبار الكتابة</h2><p style="font-size:13px;color:var(--mut)">استمع للنطق واكتب الكلمة بالإنجليزية</p><button onclick="startWritingQuiz()" style="padding:13px 40px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">ابدأ ✍️</button></div>`;return;}
+  if(wqDone){const pct=Math.round((wqSc/wqTotal)*100);d.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 0;gap:12px"><div class="sring"><span style="font-size:28px;font-weight:800;color:var(--acc)">${pct}%</span></div><h2 style="font-size:20px;font-weight:800">${pct>=80?"ممتاز! 🎉":pct>=50?"جيد 👍":"استمر 💪"}</h2><p style="font-size:13px;color:var(--mut)">${wqSc} من ${wqTotal} إجابة صحيحة</p><div style="display:flex;gap:10px"><button onclick="startWritingQuiz()" style="padding:13px 28px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer">أعد</button><button onclick="setQuizMode('writing')" class="btn-s" style="padding:13px 24px">رجوع</button></div></div>`;return;}
   const w=wqList[0];
-  d.innerHTML=`
-    <div class="prog"><div class="pfill" style="width:${((wqTotal-wqList.length)/wqTotal)*100}%"></div></div>
-    <p style="font-size:11px;color:var(--mut);text-align:center;margin-bottom:16px">${wqTotal-wqList.length+1} من ${wqTotal}</p>
-    <div class="card" style="text-align:center;padding:24px 20px;margin-bottom:12px;">
-      <p style="font-size:12px;color:var(--mut);margin-bottom:8px;">المعنى</p>
-      <div style="font-size:22px;font-weight:800;color:var(--acc2);margin-bottom:8px;">${w.arabic}</div>
-      <div style="font-size:14px;color:var(--mut);direction:ltr;margin-bottom:16px;">${w.phonetic}</div>
-      <button onclick="spkWriting('${w.word.replace(/'/g,"\'")}',this)" style="background:rgba(139,58,158,.15);color:var(--acc2);border:1px solid rgba(139,58,158,.25);border-radius:20px;padding:8px 20px;font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;">🔊 استمع للنطق</button>
-    </div>
-    <input class="wq-inp" id="wqInp" type="text" placeholder="اكتب الكلمة هنا..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter')checkWriting()"/>
-    <div id="wqFeedback" style="min-height:44px;text-align:center;margin:10px 0;font-size:14px;"></div>
-    <button onclick="checkWriting()" id="wqBtn" style="width:100%;padding:14px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">تحقق ✓</button>`;
+  d.innerHTML=`<div class="prog"><div class="pfill" style="width:${((wqTotal-wqList.length)/wqTotal)*100}%"></div></div><p style="font-size:11px;color:var(--mut);text-align:center;margin-bottom:16px">${wqTotal-wqList.length+1} من ${wqTotal}</p><div class="card" style="text-align:center;padding:24px 20px;margin-bottom:12px;"><p style="font-size:12px;color:var(--mut);margin-bottom:8px;">المعنى</p><div style="font-size:22px;font-weight:800;color:var(--acc2);margin-bottom:8px;">${w.arabic}</div><div style="font-size:14px;color:var(--mut);direction:ltr;margin-bottom:16px;">${w.phonetic}</div><button onclick="spkWriting('${w.word.replace(/'/g,"\\'")}',this)" style="background:rgba(139,58,158,.15);color:var(--acc2);border:1px solid rgba(139,58,158,.25);border-radius:20px;padding:8px 20px;font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;">🔊 استمع للنطق</button></div><input class="wq-inp" id="wqInp" type="text" placeholder="اكتب الكلمة هنا..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter')checkWriting()"/><div id="wqFeedback" style="min-height:44px;text-align:center;margin:10px 0;font-size:14px;"></div><button onclick="checkWriting()" id="wqBtn" style="width:100%;padding:14px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">تحقق ✓</button>`;
   setTimeout(()=>{const inp=document.getElementById("wqInp");if(inp)inp.focus();},200);
 }
 async function spkWriting(word,btn){
   if(btn){btn.textContent="⏳";btn.disabled=true;}
-  try{
-    const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+EL_VOICE,{method:"POST",headers:{"Content-Type":"application/json","xi-api-key":EL_KEY},body:JSON.stringify({text:word,model_id:"eleven_multilingual_v2",voice_settings:{stability:0.5,similarity_boost:0.75}})});
-    if(!r.ok)throw new Error();
-    const blob=await r.blob();const url=URL.createObjectURL(blob);const audio=new Audio(url);audio.play();audio.onended=()=>URL.revokeObjectURL(url);
-  }catch(e){
-    if(window.speechSynthesis){window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(word);u.lang="en-US";window.speechSynthesis.speak(u);}
-  }
+  try{const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+EL_VOICE,{method:"POST",headers:{"Content-Type":"application/json","xi-api-key":EL_KEY},body:JSON.stringify({text:word,model_id:"eleven_multilingual_v2",voice_settings:{stability:0.5,similarity_boost:0.75}})});if(!r.ok)throw new Error();const blob=await r.blob();const url=URL.createObjectURL(blob);const audio=new Audio(url);audio.play();audio.onended=()=>URL.revokeObjectURL(url);}
+  catch(e){if(window.speechSynthesis){window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(word);u.lang="en-US";window.speechSynthesis.speak(u);}}
   if(btn){btn.textContent="🔊 استمع للنطق";btn.disabled=false;}
 }
 function checkWriting(){
-  const inp=document.getElementById("wqInp");
-  const fb=document.getElementById("wqFeedback");
-  const btn=document.getElementById("wqBtn");
+  const inp=document.getElementById("wqInp");const fb=document.getElementById("wqFeedback");const btn=document.getElementById("wqBtn");
   if(!inp||!fb||!wqList.length)return;
-  const ans=inp.value.trim().toLowerCase();
-  const correct=wqList[0].word.toLowerCase();
+  const ans=inp.value.trim().toLowerCase();const correct=wqList[0].word.toLowerCase();
   if(!ans)return;
-  inp.disabled=true;
-  if(btn)btn.disabled=true;
+  inp.disabled=true;if(btn)btn.disabled=true;
   if(ans===correct){inp.classList.add("ok");fb.innerHTML=`<span style="color:var(--grn);font-size:22px;">✅ ممتاز!</span>`;wqSc++;}
   else{inp.classList.add("no");fb.innerHTML=`<span style="color:var(--red);font-size:13px;">❌ الصواب: </span><span style="font-family:'Playfair Display',serif;font-size:20px;color:var(--txt);">${wqList[0].word}</span>`;}
   wqList.shift();
@@ -502,22 +450,94 @@ document.getElementById("mainContent").addEventListener("scroll",function(){cons
 let txStart=0,tyStart=0;
 document.getElementById("p-home").addEventListener("touchstart",e=>{txStart=e.touches[0].clientX;tyStart=e.touches[0].clientY;},{passive:true});
 document.getElementById("p-home").addEventListener("touchend",e=>{const dx=txStart-e.changedTouches[0].clientX;const dy=Math.abs(tyStart-e.changedTouches[0].clientY);if(Math.abs(dx)>70&&dy<100){if(dx>0)nextWord();else prevWord();}},{passive:true});
+
+// =============================================
+// GRAMMAR — التعديلات هنا
+// =============================================
 let grammarData={},grammarLoaded=false,grammarLevel='A1',grammarCatOpen=-1;
-async function loadGrammarLessons(){if(grammarLoaded)return;try{const r=await fetch(SB_URL+'/rest/v1/grammar_lessons?select=*&order=order_num',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});const data=await r.json();if(Array.isArray(data)){grammarData={};data.forEach(l=>{if(!grammarData[l.level])grammarData[l.level]={};if(!grammarData[l.level][l.category])grammarData[l.level][l.category]=[];grammarData[l.level][l.category].push(l);});grammarLoaded=true;}}catch(e){console.error(e);}}
-async function drawGrammar(){const d=document.getElementById('grammarDiv');d.innerHTML='<div class="gen-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span style="font-size:13px;color:var(--mut)">Loading...</span></div>';await loadGrammarLessons();const levels=Object.keys(grammarData).sort();if(!levels.length){d.innerHTML='<div class="empty"><p style="margin-top:12px;">No lessons found</p></div>';return;}if(!grammarLevel||!grammarData[grammarLevel])grammarLevel=levels[0];const levelInfo={'A1':['🟢','Beginner','Basic words & simple sentences'],'A2':['🔵','Elementary','Everyday topics & common routines'],'B1':['🟡','Intermediate','Handle most travel & daily situations'],'B1+':['🟠','Upper-Intermediate','Express opinions & understand complex ideas'],'B2':['🔴','Pre-Advanced','Understand complex texts & interact fluently'],'C1':['🟣','Advanced','Fluent & spontaneous — near-native level']};let h='<div style="direction:ltr;"><h2 style="font-size:18px;font-weight:800;margin-bottom:12px;">Grammar 📐</h2><div class="gl-level-tabs">';levels.forEach(lv=>{h+=`<button class="gl-level-tab ${grammarLevel===lv?'on':''}" onclick="setGrammarLevel('${lv}')">${lv}</button>`;});h+='</div>';const li=levelInfo[grammarLevel];if(li){h+=`<div style="background:var(--surf);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;direction:ltr;"><span style="font-size:24px;">${li[0]}</span><div><div style="font-size:13px;font-weight:800;color:var(--txt);">${grammarLevel} — ${li[1]}</div><div style="font-size:12px;color:var(--mut);margin-top:2px;">${li[2]}</div></div></div>`;}const cats=grammarData[grammarLevel]||{};Object.keys(cats).forEach((cat,ci)=>{const lessons=cats[cat];const isOpen=grammarCatOpen===ci;h+=`<div class="gl-cat-card"><button class="gl-cat-head" onclick="toggleGramCat(${ci})"><div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:800;color:var(--txt);font-family:'Tajawal',sans-serif;">${cat}</span><span style="font-size:11px;color:var(--acc2);font-family:'Tajawal',sans-serif;text-align:left;display:block;">${lessons.length} lessons</span></div><span style="color:var(--mut);font-size:20px;line-height:1;">${isOpen?'▾':'›'}</span></button>`;if(isOpen){h+='<div class="gl-cat-body">';lessons.forEach(l=>{h+=`<div class="gl-lesson" onclick="openGrammarLesson(${l.id})"><span style="font-size:14px;font-weight:600;color:var(--txt);">${l.title_en}</span><span style="color:var(--mut);font-size:16px;">›</span></div>`;});h+='</div>';}h+='</div>';});h+='</div>';d.innerHTML=h;}
+
+// ✅ تعديل 1: حذف Authorization الخاطئ — الجدول عام يكفي apikey بس
+// ✅ تعديل 2: إضافة retry logic لو البيانات رجعت فارغة
+async function loadGrammarLessons(){
+  if(grammarLoaded)return;
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/grammar_lessons?select=*&order=order_num',{
+      headers:{'apikey':SB_KEY}  // ✅ حذفنا Authorization الخاطئ
+    });
+    const data=await r.json();
+    if(Array.isArray(data)&&data.length>0){
+      grammarData={};
+      data.forEach(l=>{
+        if(!grammarData[l.level])grammarData[l.level]={};
+        if(!grammarData[l.level][l.category])grammarData[l.level][l.category]=[];
+        grammarData[l.level][l.category].push(l);
+      });
+      grammarLoaded=true;
+    }else{
+      grammarLoaded=false; // ✅ يسمح بإعادة المحاولة لو البيانات فارغة
+    }
+  }catch(e){
+    console.error('Grammar load error:',e);
+    grammarLoaded=false; // ✅ يسمح بإعادة المحاولة عند خطأ
+  }
+}
+
+async function drawGrammar(){
+  const d=document.getElementById('grammarDiv');
+  d.innerHTML='<div class="gen-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span style="font-size:13px;color:var(--mut)">جاري التحميل...</span></div>';
+  await loadGrammarLessons();
+  const levels=Object.keys(grammarData).sort();
+  if(!levels.length){
+    d.innerHTML='<div class="empty"><div style="font-size:44px">😔</div><p style="font-weight:700;margin-top:8px;">تعذّر تحميل الدروس</p><button onclick="grammarLoaded=false;drawGrammar()" style="margin-top:12px;padding:10px 24px;background:var(--acc);color:#fff;border:none;border-radius:10px;font-family:\'Tajawal\',sans-serif;font-size:13px;cursor:pointer;">إعادة المحاولة 🔄</button></div>';
+    return;
+  }
+  if(!grammarLevel||!grammarData[grammarLevel])grammarLevel=levels[0];
+  const levelInfo={'A1':['🟢','Beginner','Basic words & simple sentences'],'A2':['🔵','Elementary','Everyday topics & common routines'],'B1':['🟡','Intermediate','Handle most travel & daily situations'],'B1+':['🟠','Upper-Intermediate','Express opinions & understand complex ideas'],'B2':['🔴','Pre-Advanced','Understand complex texts & interact fluently'],'C1':['🟣','Advanced','Fluent & spontaneous — near-native level']};
+  let h='<div style="direction:ltr;"><h2 style="font-size:18px;font-weight:800;margin-bottom:12px;">Grammar 📐</h2><div class="gl-level-tabs">';
+  levels.forEach(lv=>{h+=`<button class="gl-level-tab ${grammarLevel===lv?'on':''}" onclick="setGrammarLevel('${lv}')">${lv}</button>`;});
+  h+='</div>';
+  const li=levelInfo[grammarLevel];
+  if(li){h+=`<div style="background:var(--surf);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;direction:ltr;"><span style="font-size:24px;">${li[0]}</span><div><div style="font-size:13px;font-weight:800;color:var(--txt);">${grammarLevel} — ${li[1]}</div><div style="font-size:12px;color:var(--mut);margin-top:2px;">${li[2]}</div></div></div>`;}
+  const cats=grammarData[grammarLevel]||{};
+  Object.keys(cats).forEach((cat,ci)=>{
+    const lessons=cats[cat];const isOpen=grammarCatOpen===ci;
+    h+=`<div class="gl-cat-card"><button class="gl-cat-head" onclick="toggleGramCat(${ci})"><div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:800;color:var(--txt);font-family:'Tajawal',sans-serif;">${cat}</span><span style="font-size:11px;color:var(--acc2);font-family:'Tajawal',sans-serif;text-align:left;display:block;">${lessons.length} lessons</span></div><span style="color:var(--mut);font-size:20px;line-height:1;">${isOpen?'▾':'›'}</span></button>`;
+    if(isOpen){h+='<div class="gl-cat-body">';lessons.forEach(l=>{h+=`<div class="gl-lesson" onclick="openGrammarLesson(${l.id})"><span style="font-size:14px;font-weight:600;color:var(--txt);">${l.title_en}</span><span style="color:var(--mut);font-size:16px;">›</span></div>`;});h+='</div>';}
+    h+='</div>';
+  });
+  h+='</div>';
+  d.innerHTML=h;
+}
 function setGrammarLevel(lv){grammarLevel=lv;grammarCatOpen=-1;drawGrammar();}
 function toggleGramCat(idx){grammarCatOpen=grammarCatOpen===idx?-1:idx;drawGrammar();}
-function openGrammarLesson(id){let lesson=null;Object.values(grammarData).forEach(cats=>{Object.values(cats).forEach(lessons=>{const f=lessons.find(l=>l.id===id);if(f)lesson=f;});});if(!lesson)return;const examples=Array.isArray(lesson.examples)?lesson.examples:(typeof lesson.examples==='string'?JSON.parse(lesson.examples):[]);const detail=document.createElement('div');detail.className='gl-detail';detail.id='gramDetailOverlay';detail.innerHTML=`<div class="gl-detail-header"><button onclick="closeGrammarLesson()" style="background:none;border:none;color:var(--mut);font-size:22px;cursor:pointer;padding:0;line-height:1;">←</button><div><div style="font-size:16px;font-weight:800;">${lesson.title_en}</div><div style="font-size:11px;color:var(--mut);">${lesson.level} · ${lesson.category}</div></div></div><div class="gl-detail-body"><div class="card" style="margin-bottom:12px;"><div class="lbl" style="text-align:left;">Explanation</div><p style="font-size:14px;line-height:1.8;">${lesson.explanation}</p></div><div class="gl-rule-box">${lesson.rule}</div><div class="card"><div class="lbl" style="text-align:left;">Examples</div>${examples.map(ex=>`<div class="gl-ex ${ex.ok?'gl-ex-ok':'gl-ex-no'}"><span>${ex.ok?'✅':'❌'}</span><div style="font-weight:600;">${ex.en}</div></div>`).join('')}</div><div class="gl-tip">${lesson.tip}</div></div>`;document.body.appendChild(detail);}
+function openGrammarLesson(id){
+  let lesson=null;
+  Object.values(grammarData).forEach(cats=>{Object.values(cats).forEach(lessons=>{const f=lessons.find(l=>l.id===id);if(f)lesson=f;});});
+  if(!lesson)return;
+  let examples=[];
+  try{examples=Array.isArray(lesson.examples)?lesson.examples:(typeof lesson.examples==='string'?JSON.parse(lesson.examples):[]);}
+  catch(e){examples=[];}
+  const detail=document.createElement('div');
+  detail.className='gl-detail';detail.id='gramDetailOverlay';
+  detail.innerHTML=`<div class="gl-detail-header"><button onclick="closeGrammarLesson()" style="background:none;border:none;color:var(--mut);font-size:22px;cursor:pointer;padding:0;line-height:1;">←</button><div><div style="font-size:16px;font-weight:800;">${lesson.title_en}</div><div style="font-size:11px;color:var(--mut);">${lesson.level} · ${lesson.category}</div></div></div><div class="gl-detail-body"><div class="card" style="margin-bottom:12px;"><div class="lbl" style="text-align:left;">Explanation</div><p style="font-size:14px;line-height:1.8;">${lesson.explanation}</p></div><div class="gl-rule-box">${lesson.rule}</div><div class="card"><div class="lbl" style="text-align:left;">Examples</div>${examples.map(ex=>`<div class="gl-ex ${ex.ok?'gl-ex-ok':'gl-ex-no'}"><span>${ex.ok?'✅':'❌'}</span><div style="font-weight:600;">${ex.en}</div></div>`).join('')}</div><div class="gl-tip">${lesson.tip}</div></div>`;
+  document.body.appendChild(detail);
+}
 function closeGrammarLesson(){const el=document.getElementById('gramDetailOverlay');if(el)el.remove();}
-let ytVideos=[];let ytIdx=0;let ytWord="";
+
+// =============================================
+// YOUTUBE
+// =============================================
+let ytVideos=[],ytIdx=0,ytWord="";
 async function loadYTVideos(word){ytWord=word;ytIdx=0;ytVideos=[];const div=document.getElementById("ytIframeEl");div.innerHTML=`<div style="padding:20px;text-align:center;"><span style="font-size:13px;color:var(--mut)">⏳ جاري البحث...</span></div>`;try{const q=encodeURIComponent('"'+word+'" english speaking');const r=await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&maxResults=5&videoCaption=closedCaption&relevanceLanguage=en&key=${YT_KEY}`);const d=await r.json();ytVideos=(d.items||[]).map(i=>i.id.videoId).filter(Boolean);if(ytVideos.length>0){showYTVideo();}else{div.innerHTML=`<p style="text-align:center;color:var(--mut);padding:20px;font-size:13px;">لم يتم العثور على مقطع</p>`;}}catch(e){div.innerHTML=`<p style="text-align:center;color:var(--red);padding:20px;font-size:13px;">تعذّر التحميل</p>`;}}
 function showYTVideo(){const div=document.getElementById("ytIframeEl");const vid=ytVideos[ytIdx];const hasNext=ytIdx<ytVideos.length-1;const hasPrev=ytIdx>0;div.innerHTML=`<iframe width="100%" height="200" src="https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0&playsinline=1" frameborder="0" allow="autoplay;encrypted-media" style="display:block;border:none;border-radius:10px 10px 0 0;"></iframe><div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surf2);border-radius:0 0 10px 10px;"><button onclick="prevYT()" ${hasPrev?"":"disabled"} style="background:none;border:none;color:${hasPrev?"var(--acc)":"var(--mut)"};font-size:18px;cursor:pointer;padding:4px 8px;">‹</button><span style="font-size:11px;color:var(--mut)">${ytIdx+1} / ${ytVideos.length}</span><button onclick="nextYT()" ${hasNext?"":"disabled"} style="background:none;border:none;color:${hasNext?"var(--acc)":"var(--mut)"};font-size:18px;cursor:pointer;padding:4px 8px;">›</button></div>`;}
 function nextYT(){if(ytIdx<ytVideos.length-1){ytIdx++;showYTVideo();}}
 function prevYT(){if(ytIdx>0){ytIdx--;showYTVideo();}}
 async function toggleYT(word){const frame=document.getElementById("ytFrameEl");const btn=document.getElementById("ytBtnEl");if(!frame||!btn)return;if(frame.style.display==="none"||!frame.style.display){frame.style.display="block";const div=document.getElementById("ytIframeEl");if(!div.dataset.loaded||ytWord!==word){div.dataset.loaded="1";await loadYTVideos(word);}btn.textContent="✕ إغلاق المقطع";btn.style.background="rgba(255,50,50,.2)";}else{frame.style.display="none";btn.textContent="▶ شغّل مقطع يوتيوب";btn.style.background="";}}
-let totalWordsCount=0;
-let wordBuffer=[];
-let bufferFilling=false;
+
+// =============================================
+// WORD BUFFER
+// =============================================
+let totalWordsCount=0,wordBuffer=[],bufferFilling=false;
 async function fillBuffer(){
   if(bufferFilling)return;
   bufferFilling=true;
@@ -527,39 +547,50 @@ async function fillBuffer(){
     const body={p_limit:20};
     if(lvl)body.p_level=lvl;
     if(cat)body.p_cat=cat;
-    const r=await fetch(SB_URL+"/rest/v1/rpc/get_random_words",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},body:JSON.stringify(body)});
+    // ✅ تعديل 3: استخدام authToken لو موجود وإلا SB_KEY
+    const r=await fetch(SB_URL+"/rest/v1/rpc/get_random_words",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+(authToken||SB_KEY)},
+      body:JSON.stringify(body)
+    });
     const data=await r.json();
     if(Array.isArray(data)&&data.length>0){
       const inBuffer=new Set(wordBuffer.map(w=>w.word.toLowerCase()));
       data.filter(w=>w&&!inBuffer.has(w.word.toLowerCase())).forEach(w=>{wordBuffer.push(w);});
-      if(!totalWordsCount)totalWordsCount=data.length>0?700:0;
+      if(!totalWordsCount)totalWordsCount=700;
     }
   }catch(e){}
   bufferFilling=false;
 }
-async function fetchRandomWord(){
-  if(wordBuffer.length===0) await fillBuffer();
-  const currentWord=st.words[st.curIdx]?.word?.toLowerCase()||"";
-  let word=null;
-  for(let i=0;i<wordBuffer.length;i++){
-    if(wordBuffer[i].word.toLowerCase()!==currentWord){word=wordBuffer.splice(i,1)[0];break;}
-  }
-  if(!word&&wordBuffer.length>0) word=wordBuffer.shift();
-  if(wordBuffer.length<5) fillBuffer();
-  return word;
-}
+async function fetchRandomWord(){if(wordBuffer.length===0)await fillBuffer();const currentWord=st.words[st.curIdx]?.word?.toLowerCase()||"";let word=null;for(let i=0;i<wordBuffer.length;i++){if(wordBuffer[i].word.toLowerCase()!==currentWord){word=wordBuffer.splice(i,1)[0];break;}}if(!word&&wordBuffer.length>0)word=wordBuffer.shift();if(wordBuffer.length<5)fillBuffer();return word;}
 async function fetchWords(){const w=await fetchRandomWord();if(w){if(!st.words.find(x=>x.word===w.word))st.words.push(w);st.curIdx=st.words.length-1;save();drawHome();updCnt();}}
+
+// =============================================
+// AUTH HELPERS
+// =============================================
 function signInWithApple(){alert("Apple Sign-In قريباً!");}
 function signInWithGoogle(){alert("Google Sign-In قريباً!");}
 function showEmailAuth(){document.getElementById("authMain").style.display="none";document.getElementById("authEmailForm").style.display="block";}
 function hideEmailAuth(){document.getElementById("authEmailForm").style.display="none";document.getElementById("authMain").style.display="block";}
 function initParticles(){const c=document.getElementById("authParticles");if(!c)return;c.innerHTML="";for(let i=0;i<30;i++){const s=document.createElement("span");const sz=1+Math.random()*3;s.style.cssText=`left:${Math.random()*100}%;animation-duration:${6+Math.random()*10}s;animation-delay:${Math.random()*8}s;width:${sz}px;height:${sz}px;`;c.appendChild(s);}}
 function initApp(){load();if(!st.dark)document.body.classList.add("light");updCnt();window.speechSynthesis?.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();if(st.words&&st.words.length>0){if(st.curIdx<0||st.curIdx>=st.words.length)st.curIdx=0;drawHome();}else{document.getElementById("homeDiv").innerHTML=`<div style="text-align:center;padding:60px 20px;"><div class="gen-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><p style="font-size:13px;color:var(--mut);margin-top:12px;">جاري تحميل الكلمات...</p></div>`;}fetchWords();setTimeout(()=>fillBuffer(),2000);if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}}
+
+// =============================================
+// INIT
+// =============================================
 load();
 if(!st.dark)document.body.classList.add("light");
 const savedToken=localStorage.getItem("qulex_token");
 const savedUser=localStorage.getItem("qulex_user");
-if(savedToken&&savedUser){try{authToken=savedToken;currentUser=JSON.parse(savedUser);fetch(SB_URL+"/auth/v1/user",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+authToken}}).then(r=>r.json()).then(async d=>{if(d.id){await loadUserSaves();showApp();}else{localStorage.removeItem("qulex_token");localStorage.removeItem("qulex_user");document.getElementById("authScreen").style.display="flex";initParticles();}}).catch(()=>{showApp();});}catch(e){document.getElementById("authScreen").style.display="flex";initParticles();}}else{document.getElementById("authScreen").style.display="flex";initParticles();}
+if(savedToken&&savedUser){
+  try{
+    authToken=savedToken;currentUser=JSON.parse(savedUser);
+    fetch(SB_URL+"/auth/v1/user",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+authToken}})
+      .then(r=>r.json())
+      .then(async d=>{if(d.id){await loadUserSaves();showApp();}else{localStorage.removeItem("qulex_token");localStorage.removeItem("qulex_user");document.getElementById("authScreen").style.display="flex";initParticles();}})
+      .catch(()=>{showApp();});
+  }catch(e){document.getElementById("authScreen").style.display="flex";initParticles();}
+}else{document.getElementById("authScreen").style.display="flex";initParticles();}
 </script>
 </body>
 </html>
