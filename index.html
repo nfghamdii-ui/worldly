@@ -283,9 +283,21 @@ button:active{transform:scale(.94);}
 /* لمعان خفيف على شريط التقدّم اليومي عند الاقتراب من الهدف */
 .daily-fill{background:linear-gradient(90deg,var(--acc),var(--acc2),var(--acc));background-size:200% 100%;animation:shimmer 2.5s linear infinite;}
 /* دخول ناعم للكروت داخل الصفحة */
-.card{animation:slideUp .4s ease backwards;}
-.hero+.card{animation-delay:.04s;}
-.card+.card{animation-delay:.07s;}
+/* تسلسل دخول متدرّج للكروت داخل الصفحة */
+#homeDiv>.card,#homeDiv>.welcome-card,#homeDiv>.hero,#libDiv>.card,#statsDiv>.card,#statsDiv>.sgrid,#statsDiv>.scard{animation:staggerIn .5s cubic-bezier(.22,.61,.36,1) backwards;}
+#homeDiv>*:nth-child(1),#statsDiv>*:nth-child(1){animation-delay:.02s;}
+#homeDiv>*:nth-child(2),#statsDiv>*:nth-child(2){animation-delay:.07s;}
+#homeDiv>*:nth-child(3),#statsDiv>*:nth-child(3){animation-delay:.12s;}
+#homeDiv>*:nth-child(4),#statsDiv>*:nth-child(4){animation-delay:.17s;}
+#homeDiv>*:nth-child(5),#statsDiv>*:nth-child(5){animation-delay:.22s;}
+#homeDiv>*:nth-child(n+6),#statsDiv>*:nth-child(n+6){animation-delay:.27s;}
+@keyframes staggerIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+/* نعومة فتح قسم التفاصيل */
+@keyframes expandIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.more-wrap[style*="block"]{animation:expandIn .35s cubic-bezier(.22,.61,.36,1);}
+/* ضغط أنعم على البطاقات القابلة للنقر */
+.lcard:active,.path-card:active,.welcome-card:active{filter:brightness(1.06);}
+body.light .lcard:active,body.light .path-card:active{filter:brightness(.97);}
 .more-toggle{width:100%;background:var(--surf);border:1px solid rgba(139,58,158,.2);border-radius:14px;color:var(--acc2);font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;padding:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;transition:all .2s;}
 .more-toggle:active{transform:scale(.98);}
 .more-arrow{font-size:11px;transition:transform .3s ease;}
@@ -305,6 +317,13 @@ body.light .card,body.light .welcome-card,body.light .scard,body.light .lcard{bo
 .save-btn{margin-top:14px;padding:15px;border-radius:16px;}
 .btns3{gap:8px;}
 .qopt{padding:15px 16px;margin-bottom:10px;border-radius:14px;}
+/* انتقال أنعم للتبويب النشط */
+.tab{transition:color .25s ease,background .3s cubic-bezier(.34,1.2,.5,1),padding .3s cubic-bezier(.34,1.2,.5,1);}
+.tab-icon{transition:transform .3s cubic-bezier(.34,1.3,.5,1);}
+.tab.on .tab-icon{transform:scale(1.1);}
+.tab:active .tab-icon{transform:scale(.88);}
+/* نعومة عامة للنقل بين الصفحات */
+.page.on{animation:slideUp .4s cubic-bezier(.22,.61,.36,1);}
 </style>
 </head>
 <body>
