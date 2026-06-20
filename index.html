@@ -60,7 +60,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .tab.on .tab-label{display:inline;}
 .tab:not(.on) .tab-label{display:none;}
 .tab-icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.content{padding:calc(16px + var(--safe-top)) 16px calc(80px + var(--safe-bot));overflow-y:auto;height:100vh;scrollbar-width:none;}
+.content{padding:calc(20px + var(--safe-top)) 18px calc(90px + var(--safe-bot));overflow-y:auto;height:100vh;scrollbar-width:none;}
 .content::-webkit-scrollbar{display:none;}
 .page{display:none;}
 .page.on{display:block;animation:up .3s ease;}
@@ -69,9 +69,9 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 @keyframes saveAnim{0%{transform:scale(1);}50%{transform:scale(1.2);}100%{transform:scale(1);}}
 .word-anim{animation:wordIn .4s cubic-bezier(.34,1.1,.64,1);}
 .save-anim{animation:saveAnim .3s ease;}
-.card{background:var(--surf);border:none;border-radius:14px;padding:14px;margin-bottom:8px;}
+.card{background:var(--surf);border:none;border-radius:18px;padding:18px;margin-bottom:12px;}
 .lbl{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;text-align:right;}
-.hero{background:linear-gradient(160deg,#080808 0%,#1a0828 55%,#0f0a1a 100%);border:none;border-radius:22px;padding:24px 20px 20px;text-align:center;margin-bottom:8px;position:relative;overflow:hidden;}
+.hero{background:linear-gradient(160deg,#080808 0%,#1a0828 55%,#0f0a1a 100%);border:none;border-radius:24px;padding:28px 22px 24px;text-align:center;margin-bottom:12px;position:relative;overflow:hidden;}
 .hero::before{content:"";position:absolute;top:-60px;right:-60px;width:240px;height:240px;background:radial-gradient(circle,rgba(139,58,158,.25) 0%,transparent 70%);pointer-events:none;}
 .hero::after{content:"";position:absolute;bottom:-40px;left:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(196,122,191,.12) 0%,transparent 70%);pointer-events:none;}
 .daily-bar-wrap{position:relative;z-index:1;margin-bottom:16px;}
@@ -114,7 +114,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .btn-s{padding:13px;background:var(--surf2);color:var(--txt);border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;}
 .btn-d{padding:13px;background:var(--red);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-top:8px;}
 .srch{width:100%;background:var(--surf);border:none;border-radius:10px;color:var(--txt);font-family:'Tajawal',sans-serif;font-size:14px;padding:11px 14px;outline:none;margin-bottom:8px;}
-.lcard{background:var(--surf);border:none;border-radius:12px;padding:12px 14px;margin-bottom:6px;cursor:pointer;position:relative;}
+.lcard{background:var(--surf);border:none;border-radius:16px;padding:15px 16px;margin-bottom:10px;cursor:pointer;position:relative;}
 .fc-wrap{cursor:pointer;min-height:220px;margin-bottom:16px;}
 .fc-inner{position:relative;transition:transform .55s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d;min-height:220px;}
 .fc-inner.flip{transform:rotateY(180deg);}
@@ -131,9 +131,9 @@ body{background:var(--bg);color:var(--txt);font-family:'Tajawal',sans-serif;min-
 .quiz-mode-tabs{display:flex;background:var(--surf2);border-radius:12px;padding:4px;margin-bottom:16px;gap:4px;}
 .quiz-mode-tab{flex:1;padding:8px;border:none;background:none;border-radius:8px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;color:var(--mut);cursor:pointer;transition:all .2s;}
 .quiz-mode-tab.on{background:var(--acc);color:#fff;}
-.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
-.scard{background:var(--surf);border:none;border-radius:14px;padding:14px;text-align:center;}
-.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.scard{background:var(--surf);border:none;border-radius:18px;padding:16px 12px;text-align:center;}
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .bitem{background:var(--surf2);border:none;border-radius:12px;padding:10px 8px;text-align:center;opacity:.4;}
 .bitem.got{background:rgba(139,58,158,.15);opacity:1;}
 .prog{height:4px;background:var(--surf2);border-radius:99px;overflow:hidden;margin-bottom:6px;}
@@ -252,7 +252,7 @@ body.light .header{box-shadow:0 1px 0 #e3dcec;}
 .path-prog-bar{height:6px;background:var(--surf2);border-radius:99px;overflow:hidden;margin-top:10px;}
 .path-prog-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:99px;transition:width .5s ease;}
 .path-active-banner{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(139,58,158,.18),rgba(196,122,191,.08));border:1px solid rgba(139,58,158,.3);border-radius:14px;padding:10px 14px;margin-bottom:12px;}
-.welcome-card{background:linear-gradient(135deg,rgba(139,58,158,.12),rgba(196,122,191,.05));border:1px solid rgba(139,58,158,.18);border-radius:18px;padding:16px;margin-bottom:10px;}
+.welcome-card{background:linear-gradient(135deg,rgba(139,58,158,.12),rgba(196,122,191,.05));border:1px solid rgba(139,58,158,.18);border-radius:20px;padding:20px;margin-bottom:12px;}
 .welcome-greet{font-size:17px;font-weight:800;color:var(--txt);margin-bottom:2px;}
 .welcome-sub{font-size:12px;color:var(--mut);margin-bottom:14px;}
 .welcome-stats{display:flex;gap:8px;}
@@ -291,6 +291,20 @@ button:active{transform:scale(.94);}
 .more-arrow{font-size:11px;transition:transform .3s ease;}
 .more-arrow.open{transform:rotate(180deg);}
 .more-wrap{overflow:hidden;}
+/* ===== الإحساس الفسيح والهادئ ===== */
+.card,.welcome-card,.scard,.lcard{box-shadow:0 2px 16px rgba(0,0,0,.25);}
+body.light .card,body.light .welcome-card,body.light .scard,body.light .lcard{box-shadow:0 2px 14px rgba(120,70,150,.07);}
+.hero{box-shadow:0 6px 28px rgba(139,58,158,.18);}
+.lbl{margin-bottom:12px;letter-spacing:1px;}
+.ex-block{margin-bottom:16px;}
+.more-toggle{padding:15px;margin-top:4px;margin-bottom:12px;border-radius:16px;}
+.welcome-stats{gap:10px;}
+.wstat{padding:12px 8px;border-radius:14px;}
+.word-big{margin-bottom:8px;}
+.word-ar{margin-bottom:16px;}
+.save-btn{margin-top:14px;padding:15px;border-radius:16px;}
+.btns3{gap:8px;}
+.qopt{padding:15px 16px;margin-bottom:10px;border-radius:14px;}
 </style>
 </head>
 <body>
