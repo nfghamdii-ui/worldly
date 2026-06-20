@@ -214,6 +214,14 @@ body.light .auth-box{background:rgba(255,255,255,.95);}
 .sr-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;}
 .sr-due{background:rgba(196,122,191,.15);color:var(--acc2);}
 .sr-learned{background:rgba(62,200,122,.12);color:var(--grn);}
+
+.path-card{background:var(--surf);border-radius:16px;padding:16px;margin-bottom:10px;cursor:pointer;position:relative;overflow:hidden;border:1px solid transparent;transition:border-color .2s;}
+.path-card.active{border-color:var(--acc);}
+.path-card:active{background:var(--surf2);}
+.path-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.path-prog-bar{height:6px;background:var(--surf2);border-radius:99px;overflow:hidden;margin-top:10px;}
+.path-prog-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:99px;transition:width .5s ease;}
+.path-active-banner{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(139,58,158,.18),rgba(196,122,191,.08));border:1px solid rgba(139,58,158,.3);border-radius:14px;padding:10px 14px;margin-bottom:12px;}
 </style>
 </head>
 <body>
@@ -298,6 +306,9 @@ body.light .auth-box{background:rgba(255,255,255,.95);}
     <button onclick="applyFilt()" style="width:100%;padding:13px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer;">عرض كلمة بهذا الفلتر</button>
   </div>
 </div>
+<div class="fov" id="pathsOverlay" style="display:none" onclick="closePaths()">
+  <div class="fsheet" id="pathsSheet" onclick="event.stopPropagation()"></div>
+</div>
 </div>
 <script>
 const LEVELS=["الكل","مبتدئ","متوسط","متقدم"];
@@ -310,7 +321,7 @@ const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const EL_KEY="sk_b8efa05e522f4638748a9d48e60cf771e80dd671594d6a78";
 const YT_KEY="AIzaSyCP5k_uoUQZ58kOW2pfP9a1CEakgEyXfVE";
 const EL_VOICE="EXAVITQu4vr4xnSDxMaL";
-let st={words:[],saved:[],notes:{},curIdx:0,dark:true,fLevel:"الكل",fCat:"الكل",best:0,quizzes:0,streak:1,lastVisit:"",dailyCount:0,dailyDate:""};
+let st={words:[],saved:[],notes:{},curIdx:0,dark:true,fLevel:"الكل",fCat:"الكل",best:0,quizzes:0,streak:1,lastVisit:"",dailyCount:0,dailyDate:"",activePath:null};
 let gen=false,curtab="home",fcIdx=0,fcFlip=false,fcDone=false;
 let qqs=[],qcur=0,qsc=0,qsel=null,qdone=false;
 let quizMode="choice";
@@ -336,7 +347,7 @@ function wordHTML(w,opts={}){if(!w)return"";const saved=st.saved.some(s=>s.word=
 function toggleTip(){tipOpen=!tipOpen;const b=document.getElementById("tipBtnEl");const d=document.getElementById("tipBoxEl");if(b)b.textContent=tipOpen?"💡 إخفاء النصيحة":"💡 نصيحة لتذكر الكلمة";if(d)d.style.display=tipOpen?"block":"none";}
 function toggleGram(){gramOpen=!gramOpen;const b=document.getElementById("gramBody");const a=document.getElementById("garrw");if(b)b.style.display=gramOpen?"block":"none";if(a)a.textContent=gramOpen?"▲":"▼";}
 function toggleNote(word){if(noteEdit){const v=document.getElementById("noteInpEl")?.value||"";st.notes[word]=v;save();const d=document.getElementById("noteDispEl");const i=document.getElementById("noteInpEl");const b=document.getElementById("noteBtnEl");if(d){d.style.display="block";d.textContent=v||"لا توجد ملاحظة — اضغط تعديل";d.style.color=v?"var(--txt)":"var(--mut)";}if(i)i.style.display="none";if(b)b.textContent="تعديل ✏️";noteEdit=false;}else{const d=document.getElementById("noteDispEl");const i=document.getElementById("noteInpEl");const b=document.getElementById("noteBtnEl");if(d)d.style.display="none";if(i){i.style.display="block";i.focus();}if(b)b.textContent="حفظ ✓";noteEdit=true;}}
-function drawHome(){const d=document.getElementById("homeDiv");const hasF=st.fLevel!=="الكل"||st.fCat!=="الكل";let filterLabel="فلترة الكلمات";if(hasF){let parts=[];if(st.fLevel!=="الكل")parts.push(st.fLevel);if(st.fCat!=="الكل")parts.push((CICO[st.fCat]||"")+" "+st.fCat);filterLabel=parts.join(" · ");}let h=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><button onclick="openFilt()" style="display:flex;align-items:center;gap:6px;background:${hasF?"var(--acc)":"none"};border:1px solid ${hasF?"var(--acc)":"#2a2a2a"};border-radius:20px;padding:7px 14px;color:${hasF?"#fff":"var(--mut)"};font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;">🎯 ${filterLabel}</button><span style="font-size:11px;color:var(--mut)">${totalWordsCount||st.words.length} كلمة</span></div>`;if(gen){h+=`<div class="gen-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span style="font-size:13px;color:var(--mut)">جاري التحميل...</span></div>`;}else{const w=st.words[st.curIdx];if(w)h+=wordHTML(w,{next:true,save:true});else h+=`<div class="empty"><div style="font-size:56px;margin-bottom:12px">✨</div><h2 style="font-size:20px;font-weight:800;margin-bottom:8px">ابدأ رحلتك!</h2><button onclick="location.reload()" style="padding:13px 36px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">تحديث 🔄</button></div>`;}d.innerHTML=h;}
+function drawHome(){const d=document.getElementById("homeDiv");const hasF=st.fLevel!=="الكل"||st.fCat!=="الكل";let filterLabel="فلترة الكلمات";if(hasF){let parts=[];if(st.fLevel!=="الكل")parts.push(st.fLevel);if(st.fCat!=="الكل")parts.push((CICO[st.fCat]||"")+" "+st.fCat);filterLabel=parts.join(" · ");}const activePathDef=st.activePath?PATH_DEFS.find(p=>p.id===st.activePath):null;const pathLabel=activePathDef?activePathDef.icon+" "+activePathDef.title:"المسارات";const pathOn=!!st.activePath;let h=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><button onclick="openPaths()" style="display:flex;align-items:center;gap:6px;background:${pathOn?"var(--acc)":"none"};border:1px solid ${pathOn?"var(--acc)":"#2a2a2a"};border-radius:20px;padding:7px 14px;color:${pathOn?"#fff":"var(--mut)"};font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;">🧭 ${pathLabel}</button><span style="font-size:11px;color:var(--mut)">${totalWordsCount||st.words.length} كلمة</span></div>`;if(gen){h+=`<div class="gen-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span style="font-size:13px;color:var(--mut)">جاري التحميل...</span></div>`;}else{const w=st.words[st.curIdx];if(w)h+=wordHTML(w,{next:true,save:true});else h+=`<div class="empty"><div style="font-size:56px;margin-bottom:12px">✨</div><h2 style="font-size:20px;font-weight:800;margin-bottom:8px">ابدأ رحلتك!</h2><button onclick="location.reload()" style="padding:13px 36px;background:var(--acc);color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer">تحديث 🔄</button></div>`;}d.innerHTML=h;}
 function drawLib(){const d=document.getElementById("libDiv");if(libSel){d.innerHTML=wordHTML(libSel,{back:true,backFn:"closeLib",del:true,save:false});return;}const q=(d.querySelector(".srch")?.value||"").toLowerCase();const f=st.saved.filter(w=>w.word.toLowerCase().includes(q)||w.arabic.includes(q));let h=`<input class="srch" placeholder="ابحث عن كلمة..." oninput="drawLib()" dir="auto" value="${q}"/><div style="font-size:12px;color:var(--mut);margin-bottom:10px">${st.saved.length} كلمة محفوظة</div>`;if(!st.saved.length)h+=`<div class="empty"><div style="font-size:44px">📭</div><p style="font-weight:700;margin-top:8px">لا توجد كلمات بعد</p></div>`;else if(!f.length)h+=`<div class="empty"><div style="font-size:44px">🔍</div><p style="font-weight:700;margin-top:8px">لا توجد نتائج</p></div>`;else f.forEach(w=>{const lc=LCOL[w.level]||"var(--acc)";const due=srIsDue(w);h+=`<div class="lcard" onclick="openLib('${esc(w.word)}')"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-family:'Playfair Display',serif;font-size:18px">${w.word}</span><span style="font-size:9px;background:${lc}22;color:${lc};border-radius:6px;padding:2px 7px">${w.level}</span>${due?`<span class="sr-badge sr-due">⏰ مراجعة</span>`:(w.srReps>0?`<span class="sr-badge sr-learned">✓ ${w.srReps}</span>`:"")}</div><p style="font-size:14px;font-weight:700;color:var(--acc);margin-bottom:2px">${w.arabic}</p><p style="font-size:11px;color:var(--mut);direction:ltr;text-align:right">${w.phonetic}</p><span style="position:absolute;top:14px;left:14px;color:var(--mut);font-size:16px">›</span></div>`;});d.innerHTML=h;}
 function openLib(word){libSel=st.saved.find(w=>w.word===word);tipOpen=false;gramOpen=false;noteEdit=false;drawLib();}
 function closeLib(){libSel=null;drawLib();}
@@ -409,6 +420,47 @@ function srReview(word,correct){
 }
 function srDueCount(){return st.saved.filter(srIsDue).length;}
 function srOrdered(){return [...st.saved].map(srInit).sort((a,b)=>a.srDue-b.srDue);}
+
+
+// =============================================
+// LEARNING PATHS — مسارات التعلّم
+// المصدر هنا في دالة واحدة getPaths() — لتبديلها لـ Supabase لاحقاً
+// =============================================
+const PATH_DEFS=[
+  {id:"شغل",icon:"💼",title:"إنجليزي الشغل",desc:"مصطلحات العمل والمكتب"},
+  {id:"تواصل",icon:"🗣️",title:"إنجليزي التواصل",desc:"محادثات يومية وتعارف"},
+  {id:"تقنية",icon:"💻",title:"إنجليزي التقنية",desc:"كلمات الكمبيوتر والإنترنت"},
+  {id:"مشاعر",icon:"❤️",title:"التعبير عن المشاعر",desc:"وصف الأحاسيس والحالات"},
+  {id:"شخصية",icon:"🌟",title:"الصفات الشخصية",desc:"وصف الناس والطباع"},
+  {id:"عام",icon:"🌐",title:"إنجليزي عام",desc:"كلمات متنوعة للحياة اليومية"}
+];
+// ترجع قائمة المسارات مع حساب التقدّم. مستقبلاً: تجيب التعريفات من Supabase
+function getPaths(){
+  return PATH_DEFS.map(p=>{
+    const inPath=st.saved.filter(w=>w.cat===p.id);
+    const mastered=inPath.filter(w=>(w.srReps||0)>=3).length;
+    return {...p,saved:inPath.length,mastered,total:inPath.length};
+  });
+}
+function setActivePath(id){
+  if(st.activePath===id){st.activePath=null;st.fCat="الكل";}
+  else{st.activePath=id;st.fCat=id;st.fLevel="الكل";}
+  save();closePaths();wordBuffer=[];nextWord();
+}
+function openPaths(){
+  const paths=getPaths();
+  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><span style="font-size:16px;font-weight:800;">🧭 مسارات التعلّم</span><button onclick="closePaths()" style="background:none;border:none;color:var(--mut);font-size:20px;cursor:pointer;">✕</button></div>`;
+  h+=`<p style="font-size:12px;color:var(--mut);margin-bottom:14px;line-height:1.6;">اختر هدفاً، وبنركّز كلماتك عليه. الكلمة تُحتسب مكتملة لمَا تتقنها في المراجعة.</p>`;
+  if(st.activePath){h+=`<button onclick="setActivePath('${"${st.activePath}"}')" style="width:100%;padding:11px;background:rgba(224,85,85,.12);color:var(--red);border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:12px;">✕ إيقاف المسار الحالي</button>`;}
+  paths.forEach(p=>{
+    const pct=p.total>0?Math.round((p.mastered/p.total)*100):0;
+    const active=st.activePath===p.id;
+    h+=`<div class="path-card ${"${active?'active':''}"}" onclick="setActivePath('${"${p.id}"}')"><div style="display:flex;align-items:center;gap:12px;"><div class="path-icon" style="background:rgba(139,58,158,.12);">${"${p.icon}"}</div><div style="flex:1;"><div style="font-size:15px;font-weight:800;color:var(--txt);">${"${p.title}"}</div><div style="font-size:11px;color:var(--mut);margin-top:2px;">${"${p.desc}"}</div></div>${"${active?'<span style=\'font-size:11px;color:var(--acc);font-weight:700;\'>✓ مفعّل</span>':''}"}</div><div class="path-prog-bar"><div class="path-prog-fill" style="width:${"${pct}"}%"></div></div><div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--mut);"><span>${"${p.mastered}"} متقنة من ${"${p.saved}"} محفوظة</span><span style="color:var(--acc2);font-weight:700;">${"${pct}"}%</span></div></div>`;
+  });
+  document.getElementById("pathsSheet").innerHTML=h;
+  document.getElementById("pathsOverlay").style.display="flex";
+}
+function closePaths(){document.getElementById("pathsOverlay").style.display="none";}
 
 // =============================================
 // GRAMMAR — قائمة الدروس
