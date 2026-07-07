@@ -236,7 +236,7 @@ body.light .auth-box{background:rgba(255,255,255,.95);}
 </div>
 <script>
 const LEVELS=["الكل","مبتدئ","متوسط","متقدم"];
-const CATS=["الكل","شغل","مشاعر","شخصية","تواصل","تقنية","عام"];
+const CATS=["الكل","صفات ووصف","شخصية وسلوك","مشاعر وعلاقات","عمل وإنجاز","تواصل ولغة","تقنية وحداثة","أفعال وحركة"];
 const LCOL={مبتدئ:"#3ec87a",متوسط:"#f0a030",متقدم:"#e05555"};
 const CICO={شغل:"💼",مشاعر:"❤️",شخصية:"🌟",تواصل:"🗣️",تقنية:"💻",عام:"🌐"};
 const DAILY_GOAL=10;
@@ -497,7 +497,7 @@ async function fillBuffer(){
     const body={p_limit:20};
     if(lvl)body.p_level=lvl;
     if(cat)body.p_cat=cat;
-    const r=await fetch(SB_URL+"/rest/v1/rpc/get_random_words",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},body:JSON.stringify(body)});
+    const r=await fetch(SB_URL+"/rest/v1/rpc/get_random_words_v2",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},body:JSON.stringify(body)});
     const data=await r.json();
     if(Array.isArray(data)&&data.length>0){
       const inBuffer=new Set(wordBuffer.map(w=>w.word.toLowerCase()));
